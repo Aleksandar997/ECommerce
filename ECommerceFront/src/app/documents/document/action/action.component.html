@@ -1,0 +1,191 @@
+<toaster #toaster></toaster>
+<div class="wrapper">
+    <loader #loader></loader>
+    <mat-card>
+        <mat-card-header>
+            {{'title_add' | translate: selectedCulture?.cultureId}}
+        </mat-card-header>
+        <mat-card-content>
+            <form [formGroup]="documentActionForm">
+                <div class="example-container">
+                    <div class="table-responsive">
+                        <table class="full-width" cellspacing="0">
+                            <tr>
+                                <td>
+                                    <mat-form-field class="full-width">
+                                        <input matInput name="code" formControlName="code"
+                                            placeholder="{{'label_code' | translate: selectedCulture?.cultureId}}">
+                                        <mat-error *ngIf="documentActionForm.get('code').errors?.serverError">
+                                            {{documentActionForm.get('code').errors?.serverError}}
+                                        </mat-error>
+                                    </mat-form-field>
+                                </td>
+                                <td>
+                                    <mat-form-field class="full-width">
+                                        <input matInput name="sum" formControlName="sum"
+                                            placeholder="{{'label_sum' | translate: selectedCulture?.cultureId}}">
+                                        <mat-error *ngIf="documentActionForm.get('sum').errors?.serverError">
+                                            {{documentActionForm.get('sum').errors?.serverError}}
+                                        </mat-error>
+                                    </mat-form-field>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td formGroupName="documentStatus">
+                                    <mat-form-field class="full-width">
+                                        <mat-label>{{'label_document_status' | translate: selectedCulture?.cultureId}}
+                                        </mat-label>
+                                        <mat-select #dropdown formControlName="code">
+                                            <mat-option *ngFor="let status of documentStatuses" [value]="status.code">
+                                                {{status.value}}
+                                            </mat-option>
+                                        </mat-select>
+                                        <mat-error
+                                            *ngIf="documentActionForm.get('documentStatus')?.get('code').errors?.serverError">
+                                            {{documentActionForm.get('documentStatus')?.get('code').errors?.serverError}}
+                                        </mat-error>
+                                    </mat-form-field>
+                                </td>
+                                <td>
+                                    <mat-form-field class="full-width">
+                                        <input matInput [matDatepicker]="picker" placeholder="Choose a date"
+                                            formControlName="date">
+                                        <mat-error *ngIf="documentActionForm.get('date').errors?.serverError">
+                                            {{documentActionForm.get('date').errors?.serverError}}
+                                        </mat-error>
+                                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                                        <mat-datepicker #picker></mat-datepicker>
+                                    </mat-form-field>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td formGroupName="customer">
+                                    <mat-form-field class="full-width">
+                                        <mat-label>{{'label_customer' | translate: selectedCulture?.cultureId}}
+                                        </mat-label>
+                                        <mat-select #dropdown formControlName="customerId">
+                                            <mat-option *ngFor="let customer of customers" [value]="customer.code">
+                                                {{customer.value}}
+                                            </mat-option>
+                                        </mat-select>
+                                        <mat-error
+                                            *ngIf="documentActionForm.get('customer')?.get('customerId').errors?.serverError">
+                                            {{documentActionForm.get('customer')?.get('customerId').errors?.serverError}}
+                                        </mat-error>
+                                    </mat-form-field>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="table-responsive mat-elevation-z8 details-table" style="padding-left: 0.7rem;">
+                        <table class="mat-table">
+                            <tbody>
+                                <tr class="mat-row" formArrayName="documentDetails"
+                                    *ngFor="let detail of getDocumentDetails?.controls; let i = index">
+                                    <ng-container [formGroupName]="i">
+                                        <td>
+                                            <mat-form-field formGroupName="product">
+                                                <mat-label>label_productName</mat-label>
+                                                <input formControlName="code" name="product{{i}}" #productInput matInput
+                                                    [matAutocomplete]="auto" (ngModelChange)="onInputChange(i, $event)">
+                                                <mat-icon matSuffix>search</mat-icon>
+                                                <mat-autocomplete #auto="matAutocomplete" #productSelect>
+                                                    <mat-option *ngFor="let product of products[i]"
+                                                        [value]="product.code">
+                                                        {{product.value}}
+                                                    </mat-option>
+                                                </mat-autocomplete>
+                                                <mat-error
+                                                    *ngIf="detail.get('product').get('code')?.errors?.serverError">
+                                                    {{detail.get('product').get('code')?.errors?.serverError}}
+                                                </mat-error>
+                                            </mat-form-field>
+                                        </td>
+                                        <td>
+                                            <mat-form-field class="input">
+                                                <input matInput type="number" name="quantity{{i}}"
+                                                    formControlName="quantity" placeholder="label_quantity"
+                                                    (ngModelChange)="calculateDetailSum(element)">
+                                                <mat-error *ngIf="detail.get('quantity')?.errors?.serverError">
+                                                    {{detail.get('quantity')?.errors?.serverError}}
+                                                </mat-error>
+                                            </mat-form-field>
+                                        </td>
+                                        <td>
+                                            <mat-form-field formGroupName="vat" class="input">
+                                                <mat-label>
+                                                    {{'label_vat' | translate: selectedCulture?.cultureId}}
+                                                </mat-label>
+                                                <mat-select #dropdown formControlName="code">
+                                                    <mat-option *ngFor="let vat of vats" [value]="vat.code">
+                                                        {{vat.value}}
+                                                    </mat-option>
+                                                </mat-select>
+                                                <mat-error *ngIf="detail.get('vat')?.get('code')?.errors?.serverError">
+                                                    {{detail.get('vat')?.get('code')?.errors?.serverError}}
+                                                </mat-error>
+                                            </mat-form-field>
+                                        </td>
+                                        <td>
+                                            <mat-form-field class="input">
+                                                <input matInput type="number" name="price{{i}}" formControlName="price"
+                                                    placeholder="label_price"
+                                                    (ngModelChange)="detailCalculation(element)">
+                                                <mat-error *ngIf="detail.get('price')?.errors?.serverError">
+                                                    {{detail.get('price')?.errors?.serverError}}
+                                                </mat-error>
+                                            </mat-form-field>
+                                        </td>
+                                        <td>
+                                            <mat-form-field class="input">
+                                                <input matInput type="number" name="discount{{i}}"
+                                                    formControlName="discount" placeholder="label_discount"
+                                                    (ngModelChange)="detailCalculation(element)">
+                                                <mat-error *ngIf="detail.get('discount')?.errors?.serverError">
+                                                    {{detail.get('discount')?.errors?.serverError}}
+                                                </mat-error>
+                                                <mat-icon matSuffix>%</mat-icon>
+                                            </mat-form-field>
+                                        </td>
+                                        <td>
+                                            <mat-form-field class="input">
+                                                <input matInput type="number" name="priceWithDiscount{{i}}"
+                                                    formControlName="priceWithDiscount"
+                                                    placeholder="label_priceWithDiscount">
+                                                <mat-error *ngIf="detail.get('priceWithDiscount')?.errors?.serverError">
+                                                    {{detail.get('priceWithDiscount')?.errors?.serverError}}
+                                                </mat-error>
+                                            </mat-form-field>
+                                        </td>
+                                        <td>
+                                            <mat-form-field class="input">
+                                                <input matInput type="number" name="sum{{i}}" formControlName="sum"
+                                                    placeholder="label_sum"
+                                                    (ngModelChange)="calculateDocumentSum(element)">
+                                                <mat-error *ngIf="detail.get('sum')?.errors?.serverError">
+                                                    {{detail.get('sum')?.errors?.serverError}}
+                                                </mat-error>
+                                            </mat-form-field>
+                                        </td>
+                                    </ng-container>
+                                </tr>
+                            </tbody>
+                            <tfoot class="details-footer">
+                                <td colspan="7">
+                                    <button mat-raised-button color="primary"
+                                        (click)="addNewDetail()">{{'label_new_detail' | translate: selectedCulture?.cultureId}}</button>
+                                </td>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <button mat-raised-button color="primary"
+                        (click)="cancel()">{{'label_cancel' | translate: selectedCulture?.cultureId}}</button>
+                    <button type="submit" mat-raised-button color="primary"
+                        (click)="confirm()">{{'label_confirm' | translate: selectedCulture?.cultureId}}</button>
+                </div>
+            </form>
+        </mat-card-content>
+    </mat-card>
+</div>

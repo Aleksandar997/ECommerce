@@ -1,0 +1,52 @@
+ul,
+li {
+  list-style-type: none;
+  margin: 0;
+}
+
+.card-action-wrapper {
+  float: right;
+}
+
+mat-tree {
+  padding-top: 2rem;
+}
+
+.childless {
+  margin-left: 2.4rem;
+}
+
+.checkbox {
+  margin-top: 0.7rem;
+  margin-left: 0.7rem;
+}
+
+.wrapper {
+  position: relative
+}
+
+.deleteButton {
+  margin-left: -0.7rem;
+}
+
+/* .deleteButton mat-icon {
+  position: fixed;
+  margin-top: -0.7rem;
+  margin-left: -0.7rem;
+} */
+.mat-tree-node {
+  transition: opacity .5s linear;
+}
+
+/* .faded .to-be-faded {
+  opacity: 0.5;
+  transition: opacity .5s linear;
+} */
+.faded  {
+  opacity: 0.5;
+  transition: opacity .5s linear;
+}
+
+mat-form-field {
+  width: 20rem;
+}

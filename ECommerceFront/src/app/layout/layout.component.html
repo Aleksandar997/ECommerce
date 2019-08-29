@@ -1,0 +1,36 @@
+<mat-toolbar class="toolbar" color="primary">
+    <a [routerLink]="['/home']" class="anchor-title"><span>ECommerce</span></a>
+</mat-toolbar>
+<mat-drawer-container autosize>
+    <mat-drawer mode="side" opened class="sidebar">
+        <mat-nav-list>
+            <div style="color: #3f51b5" *ngFor="let menu of menus">
+                <a mat-list-item routerLinkActive="list-item-active" (click)="menu.expanded = !menu.expanded">
+                    <mat-icon matSuffix> {{menu.image}} </mat-icon>
+                    {{menu.code | translate: selectedCulture?.cultureId}}
+                    <span fxFlex *ngIf="menu.children && menu.children.length">
+                        <span fxFlex></span>
+                        <mat-icon [@indicatorRotate]="menu.expanded ? 'expanded': 'collapsed'">
+                            expand_more
+                        </mat-icon>
+                    </span>
+                </a>
+                <div *ngIf="menu.expanded">
+                    <a mat-list-item routerLinkActive="list-item-active" class="sidebar-nav-dropdown-item"
+                        [routerLink]="child.url" *ngFor="let child of menu.children" [routerLinkActiveOptions]="{ exact: true }">
+                        <mat-icon matSuffix> {{child.image}} </mat-icon>
+                        {{child.code | translate: selectedCulture?.cultureId}}
+                    </a>
+                </div>
+            </div>
+            <!-- <mat-divider></mat-divider> -->
+        </mat-nav-list>
+    </mat-drawer>
+    <mat-drawer-content class="main-content">
+        <breadcrumb></breadcrumb>
+        <router-outlet></router-outlet>
+    </mat-drawer-content>
+</mat-drawer-container>
+<!-- <mat-toolbar style="position: fixed;" color="primary">
+    <span style="color: white;">asdf</span>
+</mat-toolbar> -->

@@ -1,0 +1,84 @@
+.sidebar {
+    height: 100%;
+    position: fixed;
+    width: 50px;
+    transition: 0.5s;
+    margin-top: 4rem;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none; 
+}
+
+.sidebar:hover {
+    width: 250px !important;
+    transition: 0.5s;
+}
+
+.main-content {
+    height: 100%;
+    position: fixed;
+    width: 100%;
+    transition: 0.5s;
+    margin-left: 50px !important;
+    padding-top: 80px !important;
+    padding-left: 15px !important;
+    padding-right: 63px !important;
+}
+.sidebar:hover ~ .main-content {
+    background: rgba(0, 0, 0, 0.2) !important;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    transition: 0.5s;
+}
+
+.sidebar-nav-dropdown-item {
+    padding-left: 0px !important;
+    transition: 0.5s;
+}
+
+.sidebar:hover .sidebar-nav-dropdown-item {
+    padding-left: 12px !important;
+    transition: 0.5s;
+}
+
+.sidebar mat-icon {
+    padding-right: 2rem;
+}
+
+.toolbar {
+    position: fixed;
+    /* top: 0; */
+    /* left: 0; */
+    /* right: 0; */
+    z-index: 998;
+}
+
+@media only screen and (max-width: 609px) {
+    .sidebar {
+        margin-top: 3.5rem;
+    }
+}
+
+.anchor-title span{
+    color: white;
+}
+
+/* .footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    color: white;
+    text-align: center;
+    margin-left: 50px !important;
+    padding-top: 5px !important;
+    padding-left: 15px !important;
+    padding-right: 50px !important;
+
+    margin-top: 3.5rem;
+} */

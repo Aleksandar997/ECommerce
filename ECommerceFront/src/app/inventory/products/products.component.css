@@ -1,0 +1,95 @@
+.card-inner-wrapper table {
+    width: -webkit-fill-available;
+}
+
+.wrapper {
+    position: relative
+}
+
+@media only screen and (max-width: 609px) {
+    td {
+        padding-right: 0.5rem !important;
+    }
+}
+
+.card-action-wrapper {
+    width: 100%
+}
+
+.card-action-wrapper mat-form-field {
+    width: 70%;
+}
+
+.add-btn {
+    margin-right: 0.5rem;
+}
+
+.card-action-wrapper button {
+    margin-top: 3px;
+    margin-bottom: 1rem;
+    float: right;
+}
+
+mat-card-header {
+    display: block !important;
+}
+
+
+.icon-pointer {
+    cursor: pointer !important;
+}
+
+.images-expanded {
+    min-width: 100px;
+    max-width: 100px;
+    margin-right: 1.5rem;
+}
+
+/*  */
+
+table {
+    width: 100%;
+  }
+  
+  tr.example-detail-row {
+    height: 0;
+  }
+  
+  tr.example-element-row:not(.example-expanded-row):hover {
+    background: #777;
+  }
+  
+  tr.example-element-row:not(.example-expanded-row):active {
+    background: #efefef;
+  }
+  
+  .example-element-row td {
+    border-bottom-width: 0;
+  }
+  
+  .example-element-detail {
+    overflow: hidden;
+  }
+  
+  .example-element-diagram {
+    min-width: 80px;
+    border: 2px solid black;
+    padding: 8px;
+    font-weight: lighter;
+    margin: 8px 0;
+    height: 104px;
+  }
+  
+  .example-element-symbol {
+    font-weight: bold;
+    font-size: 40px;
+    line-height: normal;
+  }
+  
+  /* .example-element-description {
+    padding: 16px;
+  }
+  
+  .example-element-description-attribution {
+    opacity: 0.5;
+  } */

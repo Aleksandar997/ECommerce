@@ -1,0 +1,47 @@
+.full-width {
+    width: 100%;
+  }
+
+  .button-group {
+    text-align: right; 
+    margin-top: 1rem;
+  }
+  
+  .button-group button {
+    margin-right: 0.5rem;
+  }
+
+  mat-card-header {
+    display: block !important;
+  }
+
+
+  .details-table mat-form-field {
+    width: 150px;
+  }
+
+
+  .details-table table {
+    width: -webkit-fill-available;
+}
+
+.details-table tr.mat-footer-row, tr.mat-row {
+  height: 68px;
+}
+
+.wrapper {
+  position: relative
+}
+
+.details-footer {
+  text-align: end;
+}
+
+.details-footer button {
+  margin-right: 1.4rem;
+  margin-bottom: 1rem;
+}
+
+/* .productCell .cdk-overlay-pane {
+  margin-top: 2.5rem;
+} */

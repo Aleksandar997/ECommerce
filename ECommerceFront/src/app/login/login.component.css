@@ -1,0 +1,23 @@
+.container .card-container {
+    width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 14%;
+    padding: 0 !important;
+}
+
+.wrapper {
+    padding: 2rem;
+}
+.login-clock {
+    text-align: center;
+    top: 5rem;
+}
+
+mat-form-field {
+    width: 18.8rem;
+}
+
+.btn-forgotten-password {
+    padding-right: 0px !important;
+}

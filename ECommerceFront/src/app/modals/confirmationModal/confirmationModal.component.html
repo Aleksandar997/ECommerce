@@ -1,0 +1,14 @@
+<div class="wrapper">
+  <loader #loader></loader>
+  <div class="title-wrapper">
+    <h1 mat-dialog-title>{{data.title}}</h1>
+  </div>
+  <div mat-dialog-content class="content">
+    <p>{{data.text}}</p>
+  </div>
+  <mat-divider></mat-divider>
+  <div mat-dialog-actions class="button-group">
+    <button mat-raised-button color="primary" (click)="onDecline()">label_no</button>
+    <button mat-raised-button color="primary" (click)="onConfirm()" cdkFocusInitial>label_yes</button>
+  </div>
+</div>

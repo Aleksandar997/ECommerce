@@ -1,0 +1,66 @@
+.full-width {
+    width: 100%;
+  }
+
+  mat-card {
+    margin-bottom: 1rem;
+  }
+  
+  .wrapper {
+    position: relative
+  }
+
+  @media only screen and (max-width: 480px) {
+    .main-input td {
+      display:block;
+    }
+    .main-input .main-input-slider-cell {
+      vertical-align: middle;
+      text-align: center;
+      padding-bottom: 1rem;
+    }
+}
+
+.information-table tr {
+  width: 100%
+}
+
+.information-table .value-cell {
+  width: 85%
+}
+.information-table .active-cell {
+  padding: 2rem;
+}
+
+.image-expansion-panel {
+  margin-top: 0.5rem;
+}
+
+.image-expansion-panel .path-cell {
+  padding-left: 1rem;
+}
+
+.image-expansion-panel .path-cell img {
+  width: 100px;
+}
+
+.image-expansion-panel .delete-button-cell {
+  width: 33px;
+}
+
+.button-group {
+  text-align: right; 
+  margin-top: 1rem;
+}
+
+.button-group button {
+  margin-right: 0.5rem;
+}
+
+mat-card-header {
+  display: block !important;
+}
+
+.image-wrapper {
+  display: contents;
+}

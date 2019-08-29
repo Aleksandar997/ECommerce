@@ -1,0 +1,54 @@
+<div class="table-responsive mat-elevation-z8">
+    <table mat-table [dataSource]="dataSource" matSort multiTemplateDataRows>
+        <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                id </th>
+            <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+        </ng-container>
+        <ng-container matColumnDef="code">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                code </th>
+            <td mat-cell *matCellDef="let element"> {{element.code}} </td>
+        </ng-container>
+        <ng-container matColumnDef="value">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                value </th>
+            <td mat-cell *matCellDef="let element"> {{element.value}} </td>
+        </ng-container>
+        <ng-container matColumnDef="active" class="text-right">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                {{'label_active' | translate: selectedCulture?.cultureId}} </th>
+            <td mat-cell *matCellDef="let element">
+                <mat-icon>{{element.active ? 'done' : 'clear'}}</mat-icon>
+            </td>
+        </ng-container>
+        <ng-container matColumnDef="select">
+            <th mat-header-cell *matHeaderCellDef>
+                <mat-checkbox (change)="$event ? masterToggle() : null"
+                    [checked]="selection.hasValue() && isAllSelected()"
+                    [indeterminate]="selection.hasValue() && !isAllSelected()">
+                </mat-checkbox>
+            </th>
+            <td mat-cell *matCellDef="let row">
+                <mat-checkbox (click)="$event.stopPropagation()" (change)="selectRow(row)"
+                    [checked]="selection.isSelected(row)">
+                </mat-checkbox>
+            </td>
+        </ng-container>
+        <ng-container matColumnDef="edit" class="edit-column">
+            <th mat-header-cell *matHeaderCellDef class="text-center">
+                {{'label_edit' | translate: selectedCulture?.cultureId}} </th>
+            <td mat-cell *matCellDef="let element" class="text-center">
+                <mat-icon class="icon-pointer" matSuffix>
+                    mode_edit </mat-icon>
+            </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="example-element-row"
+            [class.example-expanded-row]="expandedElement === row" (click)="expandedElement = row">
+        </tr>
+    </table>
+    <mat-paginator #paginator (page)="onPageChange($event)" [length]="datasourceLength" [pageSizeOptions]="[5, 10, 20]"
+        showFirstLastButtons>
+    </mat-paginator>
+</div>

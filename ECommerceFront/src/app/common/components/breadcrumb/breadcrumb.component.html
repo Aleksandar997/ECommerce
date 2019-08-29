@@ -1,0 +1,7 @@
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item" aria-current="page" *ngFor="let breadcrump of breadcrumbs; let last = last">
+            {{breadcrump | translate}}
+        </li>
+    </ol>
+</nav>
