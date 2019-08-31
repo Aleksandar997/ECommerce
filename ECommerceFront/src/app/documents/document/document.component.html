@@ -3,44 +3,53 @@
     <loader #loader></loader>
     <mat-card>
         <mat-card-header>
-            {{'title_products' | translate: selectedCulture?.cultureId}}
+            {{'title_documents' | translate}}
         </mat-card-header>
         <mat-card-content class="card-inner-wrapper">
             <div class="card-action-wrapper">
                 <mat-form-field>
-                    <input name="filter" matInput 
-                        placeholder="{{'label_search' | translate: selectedCulture?.cultureId}}">
+                    <input name="filter" matInput placeholder="{{'label_search' | translate}}"
+                        [(ngModel)]="paging.filter" matInput (ngModelChange)="onFilterChange()">
                 </mat-form-field>
                 <button mat-raised-button (click)="deleteSelected()">
-                    {{'label_delete_selected' | translate: selectedCulture?.cultureId}} </button>
+                    {{'label_delete_selected' | translate}} </button>
                 <button class="add-btn" mat-raised-button [routerLink]="['./add']">
-                    {{'label_add_product' | translate: selectedCulture?.cultureId}} </button>
+                    {{'label_add_document' | translate}} </button>
             </div>
             <div class="table-responsive mat-elevation-z8">
-                <!-- <table mat-table [dataSource]="dataSource" matSort multiTemplateDataRows>
-                    <ng-container matColumnDef="name">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                            {{'label_name' | translate: selectedCulture?.cultureId}} </th>
-                        <td mat-cell *matCellDef="let element"> {{element.name}} </td>
-                    </ng-container>
+                <table mat-table [dataSource]="documentDataSource" matSort multiTemplateDataRows>
                     <ng-container matColumnDef="code">
                         <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                            {{'label_code' | translate: selectedCulture?.cultureId}} </th>
+                            {{'label_code' | translate}} </th>
                         <td mat-cell *matCellDef="let element"> {{element.code}} </td>
                     </ng-container>
-                    <ng-container matColumnDef="productType">
+                    <ng-container matColumnDef="documentType">
                         <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                            {{'label_product_type' | translate: selectedCulture?.cultureId}} </th>
-                        <td mat-cell *matCellDef="let element"> {{element.productType.name}} </td>
+                            {{'label_document_type' | translate}} </th>
+                        <td mat-cell *matCellDef="let element"> {{element.documentType.value}} </td>
                     </ng-container>
-                    <ng-container matColumnDef="active" class="text-right">
+                    <ng-container matColumnDef="documentStatus">
                         <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                            {{'label_active' | translate: selectedCulture?.cultureId}} </th>
+                            {{'label_document_status' | translate}} </th>
+                        <td mat-cell *matCellDef="let element"> {{element.documentStatus.value}} </td>
+                    </ng-container>
+                    <ng-container matColumnDef="date" class="text-right">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                            {{'label_date' | translate}} </th>
+                        <td mat-cell *matCellDef="let element">{{element.date | date: 'dd.MM.yyyy'}}</td>
+                    </ng-container>
+                    <ng-container matColumnDef="sum" class="text-right">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                            {{'label_sum' | translate}} </th>
+                        <td mat-cell *matCellDef="let element">{{element.sum}}</td>
+                    </ng-container>
+                    <ng-container matColumnDef="customer" class="text-right">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                            {{'label_customer' | translate}} </th>
                         <td mat-cell *matCellDef="let element">
-                            <mat-icon>{{element.active ? 'done' : 'clear'}}</mat-icon>
-                        </td>
+                            {{element.customer.firstName + ' ' + element.customer.lastName}}</td>
                     </ng-container>
-                    <ng-container matColumnDef="select">
+                    <!-- <ng-container matColumnDef="select">
                         <th mat-header-cell *matHeaderCellDef>
                             <mat-checkbox (change)="$event ? masterToggle() : null"
                                 [checked]="selection.hasValue() && isAllSelected()"
@@ -52,59 +61,72 @@
                                 [checked]="selection.isSelected(row)">
                             </mat-checkbox>
                         </td>
-                    </ng-container>
+                    </ng-container> -->
                     <ng-container matColumnDef="edit" class="edit-column">
                         <th mat-header-cell *matHeaderCellDef class="text-center">
-                            {{'label_edit' | translate: selectedCulture?.cultureId}} </th>
+                            {{'label_edit' | translate}} </th>
                         <td mat-cell *matCellDef="let element" class="text-center">
-                            <mat-icon class="icon-pointer" matSuffix [routerLink]="['./edit/' + element.productId]">
+                            <mat-icon class="icon-pointer" matSuffix [routerLink]="['./edit/' + element.documentId]">
                                 mode_edit </mat-icon>
                         </td>
                     </ng-container>
                     <ng-container matColumnDef="expandedDetail">
-                        <td mat-cell *matCellDef="let row" [attr.colspan]="displayedColumns.length">
+                        <td mat-cell *matCellDef="let row" [attr.colspan]="documentDisplayedColumns.length">
                             <div class="example-element-detail" style="position: relative;"
                                 [@detailExpand]="row == expandedElement ? 'expanded' : 'collapsed'">
-                                <div id="demo" style="height: 20rem;" class="carousel slide" data-ride="carousel">
-
-                                    <div class="carousel-inner">
-                                        <div style="text-align: center;"
-                                            class="{{image.active ? 'carousel-item active' : 'carousel-item' }}"
-                                            *ngFor="let image of carouselImages">
-                                            <img style="width: 250px; padding: 1rem;" src="{{img.path}}"
-                                                *ngFor="let img of image.path">
-                                        </div>
-
-                                    </div>
-
-                                    <a class="carousel-control-prev" href="#demo" role="button" data-slide="prev">
-                                        <mat-icon style="color: black;margin-right: 5rem;font-size: 4rem;">
-                                            navigate_before</mat-icon>
-                                        <span class="sr-only">Previous</span>
-                                    </a>
-                                    <a class="carousel-control-next" href="#demo" role="button" data-slide="next">
-                                        <mat-icon style="color: black;     font-size: 4rem;">navigate_next</mat-icon>
-                                        <span class="sr-only">Next</span>
-                                    </a>
+                                <div class="table-responsive mat-elevation-z8">
+                                    <table mat-table [dataSource]="detailsDataSource">
+                                        <ng-container matColumnDef="product">
+                                            <th mat-header-cell *matHeaderCellDef> {{'label_product' | translate}} </th>
+                                            <td mat-cell *matCellDef="let element"> {{element.product.name}} </td>
+                                        </ng-container>
+                                        <ng-container matColumnDef="quantity">
+                                            <th mat-header-cell *matHeaderCellDef> {{'label_quantity' | translate}}
+                                            </th>
+                                            <td mat-cell *matCellDef="let element"> {{element.quantity}} </td>
+                                        </ng-container>
+                                        <ng-container matColumnDef="vat">
+                                            <th mat-header-cell *matHeaderCellDef> {{'label_vat' | translate}} </th>
+                                            <td mat-cell *matCellDef="let element"> {{element.vat.code}}% </td>
+                                        </ng-container>
+                                        <ng-container matColumnDef="price">
+                                            <th mat-header-cell *matHeaderCellDef> {{'label_price' | translate}} </th>
+                                            <td mat-cell *matCellDef="let element"> {{element.price}} </td>
+                                        </ng-container>
+                                        <ng-container matColumnDef="discount">
+                                            <th mat-header-cell *matHeaderCellDef> {{'label_discount' | translate}}
+                                            </th>
+                                            <td mat-cell *matCellDef="let element"> {{element.discount}}% </td>
+                                        </ng-container>
+                                        <ng-container matColumnDef="priceWithDiscount">
+                                            <th mat-header-cell *matHeaderCellDef>
+                                                {{'label_priceWithDiscount' | translate}} </th>
+                                            <td mat-cell *matCellDef="let element"> {{element.priceWithDiscount}} </td>
+                                        </ng-container>
+                                        <ng-container matColumnDef="sum">
+                                            <th mat-header-cell *matHeaderCellDef> {{'label_sum' | translate}} </th>
+                                            <td mat-cell *matCellDef="let element"> {{element.sum}} </td>
+                                        </ng-container>
+                                        <tr mat-header-row *matHeaderRowDef="detailsDisplayColumns"></tr>
+                                        <tr mat-row *matRowDef="let row; columns: detailsDisplayColumns;"></tr>
+                                    </table>
+                                    <mat-paginator #detailsPaginator (page)="onDetailPageChange($event)"
+                                        [length]="detailsDatasourceLength" [pageSizeOptions]="[5, 10, 20]"
+                                        showFirstLastButtons>
+                                    </mat-paginator>
                                 </div>
-                                <mat-divider></mat-divider>
-                                <mat-form-field style="display: block;" class="full-width"
-                                    *ngFor="let info of expandedElement?.informations">
-                                    <textarea matInput #informationValue value="{{info.value}}"
-                                        placeholder="{{'label_information' | translate: selectedCulture?.cultureId}}"></textarea>
-                                </mat-form-field>
                             </div>
                         </td>
                     </ng-container>
-                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                    <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="example-element-row"
+                    <tr mat-header-row *matHeaderRowDef="documentDisplayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: documentDisplayedColumns;" class="example-element-row"
                         [class.example-expanded-row]="expandedElement === row" (click)="expandRow(row)">
                     </tr>
                     <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row"></tr>
                 </table>
-                <mat-paginator #paginator (page)="onPageChange($event)" [length]="datasourceLength"
+                <mat-paginator #paginator (page)="onPageChange($event)" [length]="documentDatasourceLength"
                     [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons>
-                </mat-paginator> -->
+                </mat-paginator>
             </div>
         </mat-card-content>
     </mat-card>

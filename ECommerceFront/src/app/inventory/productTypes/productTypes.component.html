@@ -3,18 +3,18 @@
     <loader #loader></loader>
     <mat-card>
         <mat-card-header>
-            {{'title_product_types' | translate: selectedCulture?.cultureId}}
+            {{'title_product_types' | translate}}
         </mat-card-header>
         <mat-card-content class="card-inner-wrapper">
             <div class="card-action-wrapper">
                 <!-- <mat-form-field>
                     <input name="filter" [(ngModel)]="paging.filter" matInput (ngModelChange)="onFilterChange()"
-                        placeholder="{{'label_search' | translate: selectedCulture?.cultureId}}">
+                        placeholder="{{'label_search' | translate}}">
                 </mat-form-field> -->
                 <button mat-raised-button (click)="addNewItem()">
-                    {{'label_add_type' | translate: selectedCulture?.cultureId}} </button>
+                    {{'label_add_type' | translate}} </button>
                 <button mat-raised-button (click)="saveChanges()">
-                    {{'label_save_changes' | translate: selectedCulture?.cultureId}} </button>
+                    {{'label_save_changes' | translate}} </button>
             </div>
             <mat-tree [dataSource]="datasource" [treeControl]="treeControl">
                 <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle>
@@ -22,16 +22,16 @@
                         <div class="mat-tree-node fadable">
                             <mat-form-field class="childless fadable">
                                 <input (ngModelChange)="onInputChange(node)" [(ngModel)]="node.name" matInput
-                                    placeholder="{{'label_type' | translate: selectedCulture?.cultureId}}">
+                                    placeholder="{{'label_type' | translate}}">
                             </mat-form-field>
                             <mat-checkbox class="checkbox fadable" [checked]="node.active == 'True' ? true : false"
-                                (change)="onCheckboxChange(node)" title="{{'label_active' | translate: selectedCulture?.cultureId}}"></mat-checkbox>
+                                (change)="onCheckboxChange(node)" title="{{'label_active' | translate}}"></mat-checkbox>
                             <button mat-icon-button class="fadable" (click)="addNewItem(node)" 
-                            title="{{'label_add_subtype' | translate: selectedCulture?.cultureId}}">
+                            title="{{'label_add_subtype' | translate}}">
                                 <mat-icon>add</mat-icon>
                             </button>
                             <button mat-icon-button (click)="deleteNode(node, treeNode)" class="deleteButton"
-                            title="{{'label_delete_type' | translate: selectedCulture?.cultureId}}">
+                            title="{{'label_delete_type' | translate}}">
                                     <mat-icon>{{node.toBeDeleted ? 'autorenew' : 'delete'}}</mat-icon>
                             </button>
                         </div>
@@ -48,17 +48,17 @@
                             </button>
                             <mat-form-field class="to-be-faded fadable">
                                 <input (ngModelChange)="onInputChange(node)" [(ngModel)]="node.name" matInput
-                                    placeholder="{{'label_type' | translate: selectedCulture?.cultureId}}">
+                                    placeholder="{{'label_type' | translate}}">
                             </mat-form-field>
                             <mat-checkbox class="checkbox to-be-faded fadable" [checked]="node.active == 'True' ? true : false"
-                                (change)="onCheckboxChange(node)" title="{{'label_active' | translate: selectedCulture?.cultureId}}"></mat-checkbox>
+                                (change)="onCheckboxChange(node)" title="{{'label_active' | translate}}"></mat-checkbox>
                             <!-- <mat-icon>{{node.active ? 'done' : 'clear'}}</mat-icon> -->
                             <button class="to-be-faded fadable" mat-icon-button (click)="addNewItem(node)"
-                            title="{{'label_add_subtype' | translate: selectedCulture?.cultureId}}">
+                            title="{{'label_add_subtype' | translate}}">
                                 <mat-icon>add</mat-icon>
                             </button>
                             <button mat-icon-button (click)="deleteNode(node, treeNode)" class="deleteButton"
-                            title="{{'label_delete_type' | translate: selectedCulture?.cultureId}}">
+                            title="{{'label_delete_type' | translate}}">
                                 <mat-icon>{{node.toBeDeleted ? 'autorenew' : 'delete'}}</mat-icon>
                             </button>
                         </div>

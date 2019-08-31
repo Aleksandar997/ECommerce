@@ -20,5 +20,6 @@ namespace ECommerceAPI.Models
         [ChildValidation(new string[] { "Code;product_required" })]
         public Product Product { get; set; }
         public decimal? Sum { get; set; }
+        public int VatId { get; set; }
     }
 }

@@ -7,7 +7,7 @@
             <div style="color: #3f51b5" *ngFor="let menu of menus">
                 <a mat-list-item routerLinkActive="list-item-active" (click)="menu.expanded = !menu.expanded">
                     <mat-icon matSuffix> {{menu.image}} </mat-icon>
-                    {{menu.code | translate: selectedCulture?.cultureId}}
+                    {{menu.code | translate}}
                     <span fxFlex *ngIf="menu.children && menu.children.length">
                         <span fxFlex></span>
                         <mat-icon [@indicatorRotate]="menu.expanded ? 'expanded': 'collapsed'">
@@ -19,7 +19,7 @@
                     <a mat-list-item routerLinkActive="list-item-active" class="sidebar-nav-dropdown-item"
                         [routerLink]="child.url" *ngFor="let child of menu.children" [routerLinkActiveOptions]="{ exact: true }">
                         <mat-icon matSuffix> {{child.image}} </mat-icon>
-                        {{child.code | translate: selectedCulture?.cultureId}}
+                        {{child.code | translate}}
                     </a>
                 </div>
             </div>

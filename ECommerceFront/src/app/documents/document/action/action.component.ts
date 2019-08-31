@@ -7,7 +7,6 @@ import { DocumentStatusService } from 'src/app/services/documentStatus.service';
 import { DropdownOption } from 'src/app/common/models/dropdownOption';
 import { VatService } from 'src/app/services/vat.service';
 import { ProductService } from 'src/app/services/product.service';
-import { ProductPaging } from 'src/app/models/paging/productPaging';
 import { FormGroupHelper } from 'src/app/common/helpers/formGroupHelper';
 import { Document } from 'src/app/models/document';
 import { ConfirmationModalComponent } from 'src/app/modals/confirmationModal/confirmationModal.component';
@@ -19,7 +18,8 @@ import { ErrorManagerComponent } from 'src/app/common/components/errorManager/er
 import { CustomerService } from 'src/app/services/customer.service';
 import { DocumentService } from 'src/app/services/document.service';
 import { LoaderComponent } from 'src/app/common/components/loader/loader.component';
-import { DocumentDetail } from 'src/app/models/documentDetail';
+import { BasePaging } from 'src/app/models/paging/basePaging';
+import { DetailPaging } from 'src/app/models/paging/detailPaging';
 
 @Component({
   templateUrl: './action.component.html',
@@ -40,7 +40,12 @@ export class ActionComponent extends ErrorManagerComponent implements OnInit, Af
     this.vats = new Array<DropdownOption>();
     this.products = new Array<Array<DropdownOption>>();
     this.customers = new Array<DropdownOption>();
+    this.documentId = this.activatedRoute.snapshot.params.id;
+    this.paging = new DetailPaging();
   }
+  document: Document;
+  documentId: number;
+  paging: DetailPaging;
   documentType: string;
   detailsDatasource = new MatTableDataSource<any>();
   confirmationModal = new ModalBaseComponent(this.dialog);
@@ -70,11 +75,27 @@ export class ActionComponent extends ErrorManagerComponent implements OnInit, Af
   });
 
   ngOnInit() {
-    this.addNewDetail();
+    FormGroupHelper.setDisabledProps(['sum',
+                                      'documentDetails.sum',
+                                      'documentDetails.priceWithDiscount',
+                                      'code']);
   }
 
   ngAfterViewInit() {
     this.getLists();
+    if (this.action === Action.Edit) {
+      this.paging.init('0', '5', this.documentId);
+      this.documentService.selectByDocumentId(this.paging).then(res => {
+        FormGroupHelper.mapObjectToFormGroup(res.data, this.documentActionForm);
+        console.log(this.customers);
+        console.log(this.documentActionForm);
+        this.loader.hide();
+      }).catch(err => {
+        this.loader.hide();
+        this.toaster.openSnackBar('Error', ResponseStatus.Error);
+      });
+    }
+    this.addNewDetail();
   }
 
   getLists() {
@@ -87,7 +108,10 @@ export class ActionComponent extends ErrorManagerComponent implements OnInit, Af
     }).catch(() => this.loader.hide());
     this.customerService.selectAll().then(res => {
       res.data.forEach(c => this.customers.push(new DropdownOption(c.customerId.toString(), `${c.firstName} ${c.lastName}`)));
-      this.loader.hide();
+      console.log(this.customers);
+      if (this.action !== Action.Edit) {
+        this.loader.hide();
+      }
     }).catch(() => this.loader.hide());
   }
 
@@ -106,7 +130,7 @@ export class ActionComponent extends ErrorManagerComponent implements OnInit, Af
     if (inputValue.length === 0) {
       return;
     }
-    this.productService.selectAllByFilter(ProductPaging.getFilterOnlyObject(inputValue)).then(res => {
+    this.productService.selectAllByFilter(BasePaging.filterOnlyFactory(inputValue)).then(res => {
       res.data.forEach(p => {
         const option = new DropdownOption(p.code, p.name);
         this.products[index].push(option);
@@ -140,11 +164,10 @@ export class ActionComponent extends ErrorManagerComponent implements OnInit, Af
     let document = new Document();
     // Object.assign(document, FormGroupHelper.mapFormGroupToObject(this.documentActionForm, Document) as Document)
     document = FormGroupHelper.mapFormGroupToObject(this.documentActionForm, Document);
-    document.documentDetails[0] = new DocumentDetail();
     // document.assignObject(this.documentActionForm.getRawValue());
     this.confirmationModal.openDialog(new ModalBase('confirm_document_title', 'confirm_document_title', null, this.loaderEmitter, () => {
       this.loaderEmitter.emit(true);
-      this.documentService.postObject(this.documentActionForm.getRawValue()).then(res => {
+      this.documentService.postObject(document).then(res => {
         this.confirmationModal.closeDialog();
         if (res.status === ResponseStatus.Error) {
           this.toaster.openSnackBar('Error', ResponseStatus.Error);
@@ -153,7 +176,6 @@ export class ActionComponent extends ErrorManagerComponent implements OnInit, Af
         this.toaster.openSnackBar('Success', ResponseStatus.Success);
         this.cancel();
       }).catch(err => {
-        console.log(err);
         this.confirmationModal.closeDialog();
         this.loaderEmitter.emit(false);
         this.addErrors(err, this.documentActionForm);

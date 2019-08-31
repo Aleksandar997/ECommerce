@@ -1,4 +1,5 @@
 ﻿using ECommerceAPI.Base;
+using ECommerceAPI.Base.Entities;
 using ECommerceAPI.Base.Localization.Services.Interfaces;
 using ECommerceAPI.Helpers;
 using ECommerceAPI.Models;
@@ -36,7 +37,22 @@ namespace ECommerceAPI.Controllers
         [HttpGet("selectall")]
         public async Task<IActionResult> SelectAll()
         {
-            var res = await _documentRepository.SelectAllAsync(new BasePaging());
+            var paging = QueryUrlHelper.ToObject<DocumentPaging>(HttpContext.Request.Query);
+            var res = await _documentRepository.SelectAllAsync(paging);
+            return Ok(res);
+        }
+        [HttpGet("selectdocumentdetails")]
+        public async Task<IActionResult> SelectDocumentDetails()
+        {
+            var paging = QueryUrlHelper.ToObject<DetailPaging>(HttpContext.Request.Query);
+            var res = await _documentRepository.SelectDocumentDetails(paging);
+            return Ok(res);
+        }
+        [HttpGet("selectbydocumentid")]
+        public async Task<IActionResult> SelectByDocumentId()
+        {
+            var paging = QueryUrlHelper.ToObject<DetailPaging>(HttpContext.Request.Query);
+            var res = await _documentRepository.SelectByDocumentId(paging);
             return Ok(res);
         }
     }

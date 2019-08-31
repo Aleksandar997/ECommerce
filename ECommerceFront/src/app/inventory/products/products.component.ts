@@ -1,7 +1,6 @@
 import { Component, ViewChild, AfterViewInit, EventEmitter, OnDestroy } from '@angular/core';
 import { MatTableDataSource, MatPaginator, MatSort, MatDialog } from '@angular/material';
 import { ProductService } from 'src/app/services/product.service';
-import { ProductPaging } from 'src/app/models/paging/productPaging';
 import { Product } from 'src/app/models/product';
 import { LoaderComponent } from 'src/app/common/components/loader/loader.component';
 import { SelectionModel } from '@angular/cdk/collections';
@@ -15,6 +14,7 @@ import { Router } from '@angular/router';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { Image } from 'src/app/models/image';
 import { CarouselBaseList } from 'src/app/common/models/carouselBase';
+import { BasePaging } from 'src/app/models/paging/basePaging';
 
 @Component({
   selector: 'product',
@@ -40,7 +40,7 @@ export class ProductsComponent implements AfterViewInit, OnDestroy {
   expandedElement: Product = null;
   loaderEmitter: EventEmitter<boolean> = new EventEmitter<boolean>();
   confirmationModal = new ModalBaseComponent(this.dialog);
-  paging: ProductPaging = new ProductPaging();
+  paging: BasePaging = new BasePaging();
   carouselImages: CarouselBaseList;
   constructor(private productService: ProductService, private dialog: MatDialog, private router: Router) {
     this.dataSource = new MatTableDataSource();

@@ -3,7 +3,7 @@
     <loader #loader></loader>
     <mat-card>
         <mat-card-header>
-            {{'title_add' | translate: selectedCulture?.cultureId}}
+            {{'title_add' | translate}}
         </mat-card-header>
         <mat-card-content>
             <form [formGroup]="documentActionForm">
@@ -14,7 +14,7 @@
                                 <td>
                                     <mat-form-field class="full-width">
                                         <input matInput name="code" formControlName="code"
-                                            placeholder="{{'label_code' | translate: selectedCulture?.cultureId}}">
+                                            placeholder="{{'label_code' | translate}}">
                                         <mat-error *ngIf="documentActionForm.get('code').errors?.serverError">
                                             {{documentActionForm.get('code').errors?.serverError}}
                                         </mat-error>
@@ -23,7 +23,7 @@
                                 <td>
                                     <mat-form-field class="full-width">
                                         <input matInput name="sum" formControlName="sum"
-                                            placeholder="{{'label_sum' | translate: selectedCulture?.cultureId}}">
+                                            placeholder="{{'label_sum' | translate}}">
                                         <mat-error *ngIf="documentActionForm.get('sum').errors?.serverError">
                                             {{documentActionForm.get('sum').errors?.serverError}}
                                         </mat-error>
@@ -33,7 +33,7 @@
                             <tr>
                                 <td formGroupName="documentStatus">
                                     <mat-form-field class="full-width">
-                                        <mat-label>{{'label_document_status' | translate: selectedCulture?.cultureId}}
+                                        <mat-label>{{'label_document_status' | translate}}
                                         </mat-label>
                                         <mat-select #dropdown formControlName="code">
                                             <mat-option *ngFor="let status of documentStatuses" [value]="status.code">
@@ -61,7 +61,7 @@
                             <tr>
                                 <td formGroupName="customer">
                                     <mat-form-field class="full-width">
-                                        <mat-label>{{'label_customer' | translate: selectedCulture?.cultureId}}
+                                        <mat-label>{{'label_customer' | translate}}
                                         </mat-label>
                                         <mat-select #dropdown formControlName="customerId">
                                             <mat-option *ngFor="let customer of customers" [value]="customer.code">
@@ -105,7 +105,7 @@
                                             <mat-form-field class="input">
                                                 <input matInput type="number" name="quantity{{i}}"
                                                     formControlName="quantity" placeholder="label_quantity"
-                                                    (ngModelChange)="calculateDetailSum(element)">
+                                                    (ngModelChange)="calculateDetailSum(detail)">
                                                 <mat-error *ngIf="detail.get('quantity')?.errors?.serverError">
                                                     {{detail.get('quantity')?.errors?.serverError}}
                                                 </mat-error>
@@ -114,7 +114,7 @@
                                         <td>
                                             <mat-form-field formGroupName="vat" class="input">
                                                 <mat-label>
-                                                    {{'label_vat' | translate: selectedCulture?.cultureId}}
+                                                    {{'label_vat' | translate}}
                                                 </mat-label>
                                                 <mat-select #dropdown formControlName="code">
                                                     <mat-option *ngFor="let vat of vats" [value]="vat.code">
@@ -130,7 +130,7 @@
                                             <mat-form-field class="input">
                                                 <input matInput type="number" name="price{{i}}" formControlName="price"
                                                     placeholder="label_price"
-                                                    (ngModelChange)="detailCalculation(element)">
+                                                    (ngModelChange)="detailCalculation(detail)">
                                                 <mat-error *ngIf="detail.get('price')?.errors?.serverError">
                                                     {{detail.get('price')?.errors?.serverError}}
                                                 </mat-error>
@@ -140,7 +140,7 @@
                                             <mat-form-field class="input">
                                                 <input matInput type="number" name="discount{{i}}"
                                                     formControlName="discount" placeholder="label_discount"
-                                                    (ngModelChange)="detailCalculation(element)">
+                                                    (ngModelChange)="detailCalculation(detail)">
                                                 <mat-error *ngIf="detail.get('discount')?.errors?.serverError">
                                                     {{detail.get('discount')?.errors?.serverError}}
                                                 </mat-error>
@@ -161,7 +161,7 @@
                                             <mat-form-field class="input">
                                                 <input matInput type="number" name="sum{{i}}" formControlName="sum"
                                                     placeholder="label_sum"
-                                                    (ngModelChange)="calculateDocumentSum(element)">
+                                                    (ngModelChange)="calculateDocumentSum(detail)">
                                                 <mat-error *ngIf="detail.get('sum')?.errors?.serverError">
                                                     {{detail.get('sum')?.errors?.serverError}}
                                                 </mat-error>
@@ -173,17 +173,20 @@
                             <tfoot class="details-footer">
                                 <td colspan="7">
                                     <button mat-raised-button color="primary"
-                                        (click)="addNewDetail()">{{'label_new_detail' | translate: selectedCulture?.cultureId}}</button>
+                                        (click)="addNewDetail()">{{'label_new_detail' | translate}}</button>
                                 </td>
                             </tfoot>
                         </table>
+                        <mat-paginator #paginator (page)="onPageChange($event)" [length]="datasourceLength"
+                        [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons>
+                        </mat-paginator>
                     </div>
                 </div>
                 <div class="button-group">
                     <button mat-raised-button color="primary"
-                        (click)="cancel()">{{'label_cancel' | translate: selectedCulture?.cultureId}}</button>
+                        (click)="cancel()">{{'label_cancel' | translate}}</button>
                     <button type="submit" mat-raised-button color="primary"
-                        (click)="confirm()">{{'label_confirm' | translate: selectedCulture?.cultureId}}</button>
+                        (click)="confirm()">{{'label_confirm' | translate}}</button>
                 </div>
             </form>
         </mat-card-content>

@@ -4,7 +4,9 @@ import { ResponseBase } from '../common/models/responseBase';
 import { Product } from '../models/product';
 import { HttpHeaders } from '@angular/common/http';
 import { UploadFileInfo } from '../models/uploadFileInfo';
-import { ProductPaging } from '../models/paging/productPaging';
+import { BasePaging } from '../models/paging/basePaging';
+import { PagingHelper } from '../common/helpers/pagingHelper';
+
 
 @Injectable({
   providedIn: 'root'
@@ -21,8 +23,8 @@ export class ProductService {
     });
   }
 
-  ProductSelectAll(paging: ProductPaging): Promise<ResponseBase<Array<Product>>> {
-    const url = 'product/selectAll?' + paging.pagingToUrl();
+  ProductSelectAll(paging: BasePaging): Promise<ResponseBase<Array<Product>>> {
+    const url = 'product/selectAll?' + PagingHelper.ToUrlQueryParam(paging);
     return this.httpClient.get(url);
   }
 
@@ -30,14 +32,14 @@ export class ProductService {
     return this.httpClient.get('product/selectSingle/' + productId);
   }
 
-  ProductDelete(intList: Array<number>, paging: ProductPaging): Promise<ResponseBase<Array<Product>>> {
+  ProductDelete(intList: Array<number>, paging: BasePaging): Promise<ResponseBase<Array<Product>>> {
     let url = 'product/delete?';
     intList.forEach(p => url += 'value=' + p + '&');
-    url += paging.pagingToUrl();
+    url += PagingHelper.ToUrlQueryParam(paging);
     return this.httpClient.delete(url);
   }
-  selectAllByFilter(paging: ProductPaging): Promise<ResponseBase<Array<Product>>> {
-    const url = 'product/selectAllByFilter?' + paging.pagingToUrl();
+  selectAllByFilter(paging: BasePaging): Promise<ResponseBase<Array<Product>>> {
+    const url = 'product/selectAllByFilter?' + PagingHelper.ToUrlQueryParam(paging);
     return this.httpClient.get(url);
   }
 }

@@ -18,6 +18,9 @@ namespace ECommerceAPI.Models
         public decimal Sum { get; set; }
         public Customer Customer { get; set; }
         public List<DocumentDetail> DocumentDetails { get; set; }
+        public int CustomerId { get; set; }
+        public int DocumentStatusId { get; set; }
+        public int DocumentTypeId { get; set; }
 
         public Document()
         {

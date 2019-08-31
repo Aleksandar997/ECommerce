@@ -3,39 +3,39 @@
     <loader #loader></loader>
     <mat-card>
         <mat-card-header>
-            {{'title_products' | translate: selectedCulture?.cultureId}}
+            {{'title_products' | translate}}
         </mat-card-header>
         <mat-card-content class="card-inner-wrapper">
             <div class="card-action-wrapper">
                 <mat-form-field>
                     <input name="filter" [(ngModel)]="paging.filter" matInput (ngModelChange)="onFilterChange()"
-                        placeholder="{{'label_search' | translate: selectedCulture?.cultureId}}">
+                        placeholder="{{'label_search' | translate}}">
                 </mat-form-field>
                 <button mat-raised-button (click)="deleteSelected()">
-                    {{'label_delete_selected' | translate: selectedCulture?.cultureId}} </button>
+                    {{'label_delete_selected' | translate}} </button>
                 <button class="add-btn" mat-raised-button [routerLink]="['./add']">
-                    {{'label_add_product' | translate: selectedCulture?.cultureId}} </button>
+                    {{'label_add_product' | translate}} </button>
             </div>
             <div class="table-responsive mat-elevation-z8">
                 <table mat-table [dataSource]="dataSource" matSort multiTemplateDataRows>
                     <ng-container matColumnDef="name">
                         <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                            {{'label_name' | translate: selectedCulture?.cultureId}} </th>
+                            {{'label_name' | translate}} </th>
                         <td mat-cell *matCellDef="let element"> {{element.name}} </td>
                     </ng-container>
                     <ng-container matColumnDef="code">
                         <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                            {{'label_code' | translate: selectedCulture?.cultureId}} </th>
+                            {{'label_code' | translate}} </th>
                         <td mat-cell *matCellDef="let element"> {{element.code}} </td>
                     </ng-container>
                     <ng-container matColumnDef="productType">
                         <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                            {{'label_product_type' | translate: selectedCulture?.cultureId}} </th>
+                            {{'label_product_type' | translate}} </th>
                         <td mat-cell *matCellDef="let element"> {{element.productType.name}} </td>
                     </ng-container>
                     <ng-container matColumnDef="active" class="text-right">
                         <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                            {{'label_active' | translate: selectedCulture?.cultureId}} </th>
+                            {{'label_active' | translate}} </th>
                         <td mat-cell *matCellDef="let element">
                             <mat-icon>{{element.active ? 'done' : 'clear'}}</mat-icon>
                         </td>
@@ -55,7 +55,7 @@
                     </ng-container>
                     <ng-container matColumnDef="edit" class="edit-column">
                         <th mat-header-cell *matHeaderCellDef class="text-center">
-                            {{'label_edit' | translate: selectedCulture?.cultureId}} </th>
+                            {{'label_edit' | translate}} </th>
                         <td mat-cell *matCellDef="let element" class="text-center">
                             <mat-icon class="icon-pointer" matSuffix [routerLink]="['./edit/' + element.productId]">
                                 mode_edit </mat-icon>
@@ -66,8 +66,7 @@
                             <div class="example-element-detail" style="position: relative;"
                                 [@detailExpand]="row == expandedElement ? 'expanded' : 'collapsed'">
                                 <!-- <div class="example-element-description table-responsive" style="display: table-row"> -->
-                                <div id="demo" style="height: 20rem;"  class="carousel slide" data-ride="carousel">
-
+                                <div *ngIf="carouselImages.length > 0" id="demo" style="height: 20rem;"  class="carousel slide" data-ride="carousel">
                                     <div class="carousel-inner">
                                         <div style="text-align: center;"
                                             class="{{image.active ? 'carousel-item active' : 'carousel-item' }}"
@@ -77,27 +76,22 @@
                                         </div>
 
                                     </div>
-
-                                    <a class="carousel-control-prev" href="#demo" role="button" data-slide="prev">
+                                    <a class="carousel-control-prev" href="#demo" role="button" data-slide="prev" *ngIf="carouselImages.length > 1">
                                         <!-- <span class="carousel-control-prev-icon" aria-hidden="true"></span> -->
                                         <mat-icon style="color: black;margin-right: 5rem;font-size: 4rem;">navigate_before</mat-icon>
                                         <span class="sr-only">Previous</span>
                                     </a>
-                                    <a class="carousel-control-next" href="#demo" role="button" data-slide="next">
+                                    <a class="carousel-control-next" href="#demo" role="button" data-slide="next" *ngIf="carouselImages.length > 1">
                                         <!-- <span class="carousel-control-next-icon" aria-hidden="true"></span> -->
                                         <mat-icon style="color: black;     font-size: 4rem;">navigate_next</mat-icon>
                                         <span class="sr-only">Next</span>
                                     </a>
-
-
                                 </div>
                                 <mat-divider></mat-divider>
                                 <mat-form-field style="display: block;" class="full-width" *ngFor="let info of expandedElement?.informations">
                                         <textarea matInput #informationValue value="{{info.value}}"
-                                            placeholder="{{'label_information' | translate: selectedCulture?.cultureId}}"></textarea>
+                                            placeholder="{{'label_information' | translate}}"></textarea>
                                     </mat-form-field>
-
-
                             </div>
                         </td>
                     </ng-container>

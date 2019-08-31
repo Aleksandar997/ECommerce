@@ -31,8 +31,8 @@ export class Product {
             this.productType.productTypeId = +product.productType.productTypeId;
         }
         this.active = product.active ? product.active : this.active;
-        this.informations = product.informations.length > 0 ? product.informations : this.informations;
-        this.images = product.images.length ? product.images : this.images;
+        this.informations = product.informations;
+        this.images = product.images;
     }
 
     getFormData(): FormData {

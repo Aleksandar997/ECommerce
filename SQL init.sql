@@ -492,8 +492,7 @@ BEGIN TRANSACTION
 	SELECT [Path], [Name], Active, @ProductId, GETDATE(), @UserId
 	FROM @Images It
 	WHERE It.ImageId = 0
-
-	    
+    
 	UPDATE I
 	SET 
 	I.[Value] = It.[Value],
@@ -504,17 +503,18 @@ BEGIN TRANSACTION
 	INNER JOIN @Informations AS It
 	ON I.InformationId = It.InformationId
 
+	DELETE I FROM Information I
+    LEFT JOIN @Informations INF
+	ON I.InformationId = INF.InformationId
+	WHERE INF.InformationId IS NULL
+	AND I.ProductId = @ProductId
+
 	INSERT INTO 
 	Information ([Value], Active, ProductId, sysDTCreated, sysUserAddId)
 	SELECT [Value], Active, @ProductId, GETDATE(), @UserId
 	FROM @Informations It
 	WHERE It.InformationId = 0
 
-	DELETE I FROM Information I
-    LEFT JOIN @Informations INF
-	ON I.InformationId = INF.InformationId
-	WHERE INF.InformationId IS NULL
-	AND I.ProductId = @ProductId
 
 	BEGIN COMMIT END
 	SELECT @ProductId
@@ -973,6 +973,7 @@ END
 GO
 
 CREATE PROCEDURE Document_SelectAll
+@DocumentType nvarchar(20),
 @SortBy nvarchar(30),
 @SortOrder tinyint,
 @Skip int,
@@ -980,21 +981,34 @@ CREATE PROCEDURE Document_SelectAll
 @Filter nvarchar(300) = ''
 AS
 BEGIN
+	DECLARE @documents AS Table(
+	DocumentId int NOT NULL,
+	DocumentTypeId int NOT NULL,
+	DocumentStatusId int NOT NULL,
+	Code nvarchar(50) NOT NULL,
+	[Date] date NOT NULL,
+	[Sum] decimal(18,2) NOT NULL,
+	CustomerId int NOT NULL
+	)
+	INSERT INTO @documents
 	SELECT
 	DocumentId,
-	DocumentTypeId,
+	D.DocumentTypeId,
 	DocumentStatusId,
-	Code,
+	D.Code,
 	[Date],
 	[Sum],
 	CustomerId
 	FROM
 	Document D
+	INNER JOIN DocumentType DT
+	ON D.DocumentTypeId = DT.DocumentTypeId
 	WHERE 
-	(Code like '%' + @Filter + '%')
+	(D.Code like '%' + @Filter + '%')
+	AND DT.[Value] = @DocumentType
 	ORDER BY
-	CASE WHEN @SortBy = N'Code' AND @SortOrder = 1 THEN Code END ASC,
-	CASE WHEN @SortBy = N'Code' AND @SortOrder = 2 THEN Code END DESC,
+	CASE WHEN @SortBy = N'Code' AND @SortOrder = 1 THEN D.Code END ASC,
+	CASE WHEN @SortBy = N'Code' AND @SortOrder = 2 THEN D.Code END DESC,
 	CASE WHEN @SortBy = N'Date' AND @SortOrder = 1 THEN [Date] END ASC,
 	CASE WHEN @SortBy = N'Date' AND @SortOrder = 2 THEN [Date] END DESC,
 	CASE WHEN @SortBy = N'Sum' AND @SortOrder = 1 THEN [Sum] END ASC,
@@ -1003,12 +1017,229 @@ BEGIN
 	FETCH NEXT @Take ROWS ONLY
 
 	SELECT
+	*
+	FROM 
+	@documents
+
+	SELECT
 	DT.DocumentTypeId,
 	DT.Code,
 	[Value]
 	FROM DocumentType DT
-	RIGHT JOIN Document D
-	ON DT.DocumentTypeId = D.DocumentTypeId
+	WHERE 
+	Active = 1 AND
+	DT.[Value] = @DocumentType
+
+	SELECT
+	DS.DocumentStatusId,
+	DS.Code,
+	DS.[Value]
+	FROM DocumentStatus DS
+	WHERE Active = 1
+
+	SELECT 
+	C.CustomerId,
+	FirstName,
+	LastName
+	FROM Customer C
+
+	SELECT
+	COUNT(*)
+	FROM
+	Document D
+	INNER JOIN DocumentType DT
+	ON D.DocumentTypeId = DT.DocumentTypeId
+	WHERE 
+	(D.Code like '%' + @Filter + '%')
+	AND DT.[Value] = @DocumentType
+END
+GO
+
+CREATE PROCEDURE Document_SelectDetails
+@DocumentId nvarchar(20),
+@SortBy nvarchar(30),
+@SortOrder tinyint,
+@Skip int,
+@Take int,
+@Filter nvarchar(300) = ''
+AS
+BEGIN
+	DECLARE @details AS Table(
+	DocumentDetailId int NOT NULL,
+	DocumentId int NOT NULL,
+	Quantity int NOT NULL,
+	Price decimal(18,2) NOT NULL,
+	Discount decimal(18,2) NOT NULL,
+	PriceWithDiscount decimal(18,2) NOT NULL,
+	[Sum] decimal(18,2) NOT NULL,
+	ProductId int NOT NULL,
+	VatId int NOT NULL
+	)
+	INSERT INTO @details
+	SELECT
+	DocumentDetailId,
+	DocumentId,
+	Quantity,
+	Price,
+	Discount,
+	PriceWithDiscount,
+	[Sum],
+	ProductId,
+	VatId
+	FROM 
+	DocumentDetail
+	WHERE DocumentId = @DocumentId
+	ORDER BY
+	CASE WHEN @SortBy = N'Quantity' AND @SortOrder = 1 THEN Quantity END ASC,
+	CASE WHEN @SortBy = N'Quantity' AND @SortOrder = 2 THEN Quantity END DESC,
+	CASE WHEN @SortBy = N'Price' AND @SortOrder = 1 THEN Price END ASC,
+	CASE WHEN @SortBy = N'Price' AND @SortOrder = 2 THEN Price END DESC,
+	CASE WHEN @SortBy = N'Discount' AND @SortOrder = 1 THEN Discount END ASC,
+	CASE WHEN @SortBy = N'Discount' AND @SortOrder = 2 THEN Discount END DESC,
+	CASE WHEN @SortBy = N'PriceWithDiscount' AND @SortOrder = 1 THEN PriceWithDiscount END ASC,
+	CASE WHEN @SortBy = N'PriceWithDiscount' AND @SortOrder = 2 THEN PriceWithDiscount END DESC,
+	CASE WHEN @SortBy = N'Sum' AND @SortOrder = 1 THEN [Sum] END ASC,
+	CASE WHEN @SortBy = N'Sum' AND @SortOrder = 2 THEN [Sum] END DESC
+	OFFSET @Skip ROWS
+	FETCH NEXT @Take ROWS ONLY
+
+	SELECT
+	*
+	FROM
+	@details
+
+	SELECT 
+	P.ProductId,
+	[Name]
+	FROM Product P
+	INNER JOIN @details DD
+	ON DD.ProductId =  P.ProductId
+	WHERE Active = 1
+
+	SELECT 
+	VatId,
+	[Code]
+	FROM 
+	Vat
+	WHERE Active = 1
+
+	SELECT
+	COUNT(*)
+	FROM
+	DocumentDetail
+	WHERE DocumentId = @DocumentId
+END
+GO
+
+CREATE PROCEDURE Document_SelectById
+@DocumentId nvarchar(20),
+@SortBy nvarchar(30),
+@SortOrder tinyint,
+@Skip int,
+@Take int,
+@Filter nvarchar(300) = ''
+AS BEGIN
+	DECLARE @document AS Table(
+	DocumentId int NOT NULL,
+	DocumentTypeId int NOT NULL,
+	DocumentStatusId int NOT NULL,
+	Code nvarchar(50) NOT NULL,
+	[Date] date NOT NULL,
+	[Sum] decimal(18,2) NOT NULL,
+	CustomerId int NOT NULL
+	)
+	INSERT INTO @document
+	SELECT
+	DocumentId,
+	D.DocumentTypeId,
+	DocumentStatusId,
+	D.Code,
+	[Date],
+	[Sum],
+	CustomerId
+	FROM
+	Document D
+	WHERE DocumentId = @DocumentId
+
+	DECLARE @details AS Table(
+	DocumentDetailId int NOT NULL,
+	DocumentId int NOT NULL,
+	Quantity int NOT NULL,
+	Price decimal(18,2) NOT NULL,
+	Discount decimal(18,2) NOT NULL,
+	PriceWithDiscount decimal(18,2) NOT NULL,
+	[Sum] decimal(18,2) NOT NULL,
+	ProductId int NOT NULL,
+	VatId int NOT NULL
+	)
+	INSERT INTO @details
+	SELECT
+	DocumentDetailId,
+	DocumentId,
+	Quantity,
+	Price,
+	Discount,
+	PriceWithDiscount,
+	[Sum],
+	ProductId,
+	VatId
+	FROM 
+	DocumentDetail
+	WHERE DocumentId = @DocumentId
+	ORDER BY
+	CASE WHEN @SortBy = N'Quantity' AND @SortOrder = 1 THEN Quantity END ASC,
+	CASE WHEN @SortBy = N'Quantity' AND @SortOrder = 2 THEN Quantity END DESC,
+	CASE WHEN @SortBy = N'Price' AND @SortOrder = 1 THEN Price END ASC,
+	CASE WHEN @SortBy = N'Price' AND @SortOrder = 2 THEN Price END DESC,
+	CASE WHEN @SortBy = N'Discount' AND @SortOrder = 1 THEN Discount END ASC,
+	CASE WHEN @SortBy = N'Discount' AND @SortOrder = 2 THEN Discount END DESC,
+	CASE WHEN @SortBy = N'PriceWithDiscount' AND @SortOrder = 1 THEN PriceWithDiscount END ASC,
+	CASE WHEN @SortBy = N'PriceWithDiscount' AND @SortOrder = 2 THEN PriceWithDiscount END DESC,
+	CASE WHEN @SortBy = N'Sum' AND @SortOrder = 1 THEN [Sum] END ASC,
+	CASE WHEN @SortBy = N'Sum' AND @SortOrder = 2 THEN [Sum] END DESC
+	OFFSET @Skip ROWS
+	FETCH NEXT @Take ROWS ONLY
+
+	SELECT 
+	P.ProductId,
+	Code,
+	[Name],
+	P.ProductTypeId
+	FROM Product P
+	INNER JOIN @details DD
+	ON DD.ProductId =  P.ProductId
+	WHERE Active = 1
+
+	SELECT
+	ProductTypeId,
+	[Name]
+	FROM
+	ProductType
+
+	SELECT
+	*
+	FROM
+	@details
+
+	SELECT 
+	VatId,
+	[Code]
+	FROM 
+	Vat
+	WHERE Active = 1
+
+	SELECT
+	*
+	FROM 
+	@document
+
+	SELECT
+	DT.DocumentTypeId,
+	DT.Code,
+	[Value]
+	FROM DocumentType DT
+	INNER JOIN @document D
+	ON D.DocumentTypeId = DT.DocumentTypeId
 	WHERE Active = 1
 
 	SELECT
@@ -1016,7 +1247,7 @@ BEGIN
 	DS.Code,
 	DS.[Value]
 	FROM DocumentStatus DS
-	RIGHT JOIN Document D
+	INNER JOIN @document D
 	ON DS.DocumentStatusId = D.DocumentStatusId
 	WHERE Active = 1
 
@@ -1025,14 +1256,14 @@ BEGIN
 	FirstName,
 	LastName
 	FROM Customer C
-	RIGHT JOIN Document D
+	INNER JOIN @document D
 	ON C.CustomerId = D.CustomerId
 
 	SELECT
 	COUNT(*)
 	FROM
-	Document	
-	WHERE Code like '%' + @Filter + '%'
+	DocumentDetail
+	WHERE DocumentId = @DocumentId
 END
 GO
 

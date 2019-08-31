@@ -12,9 +12,15 @@ export class CarouselBase {
 
 export class CarouselBaseList extends Array<CarouselBase> {
     setActive(element) {
+        if (!this[element]) {
+            return;
+        }
         this[element].active = true;
     }
     populate(images: Array<Image>) {
+        if (!images) {
+            return;
+        }
         // tslint:disable-next-line:prefer-for-of
         for (let index = 0; images.length > 0; index++) {
             const i = images[index];

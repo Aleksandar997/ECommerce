@@ -3,7 +3,7 @@
     <loader #loader></loader>
     <mat-card>
         <mat-card-header>
-            {{'title_add' | translate: selectedCulture?.cultureId}}
+            {{'title_add' | translate}}
         </mat-card-header>
         <mat-card-content>
             <form [formGroup]="productActionForm">
@@ -14,7 +14,7 @@
                                 <td>
                                     <mat-form-field class="full-width">
                                         <input matInput name="name" formControlName="name"
-                                            placeholder="{{'label_name' | translate: selectedCulture?.cultureId}}">
+                                            placeholder="{{'label_name' | translate}}">
                                         <mat-error *ngIf="productActionForm.get('name').errors?.serverError">
                                             {{productActionForm.get('name').errors?.serverError}}
                                         </mat-error>
@@ -23,7 +23,7 @@
                                 <td>
                                     <mat-form-field class="full-width">
                                         <input matInput name="code" formControlName="code"
-                                            placeholder="{{'label_code' | translate: selectedCulture?.cultureId}}">
+                                            placeholder="{{'label_code' | translate}}">
                                         <mat-error *ngIf="productActionForm.get('code').errors?.serverError">
                                             {{productActionForm.get('code').errors?.serverError}}
                                         </mat-error>
@@ -33,7 +33,7 @@
                             <tr>
                                 <td formGroupName="productType">
                                     <mat-form-field style="width: 100%">
-                                        <mat-label>{{'label_product_type' | translate: selectedCulture?.cultureId}}
+                                        <mat-label>{{'label_product_type' | translate}}
                                         </mat-label>
                                         <mat-select #dropdown
                                         formControlName="productTypeId">
@@ -51,7 +51,7 @@
                                 </td>
                                 <td class="main-input-slider-cell">
                                     <mat-slide-toggle name="productActive" formControlName="active">
-                                        {{'label_active' | translate: selectedCulture?.cultureId}}
+                                        {{'label_active' | translate}}
                                     </mat-slide-toggle>
                                 </td>
                             </tr>
@@ -61,7 +61,7 @@
                         <mat-expansion-panel>
                             <mat-expansion-panel-header>
                                 <mat-panel-title>
-                                    {{'label_informations' | translate: selectedCulture?.cultureId}}
+                                    {{'label_informations' | translate}}
                                 </mat-panel-title>
                                 <!-- <mat-panel-description>
                                     label_informations_explanation
@@ -75,7 +75,7 @@
                                             <td class="value-cell">
                                                 <mat-form-field class="full-width">
                                                     <textarea matInput #informationValue
-                                                        placeholder="{{'label_information' | translate: selectedCulture?.cultureId}}"
+                                                        placeholder="{{'label_information' | translate}}"
                                                         formControlName="value"></textarea>
                                                     <mat-error *ngIf="info.get('value').errors?.serverError">
                                                         {{info.get('value').errors?.serverError}}
@@ -84,7 +84,7 @@
                                             </td>
                                             <td class="active-cell">
                                                 <mat-slide-toggle name="infoActive{{i}}" formControlName="active">
-                                                    {{'label_active' | translate: selectedCulture?.cultureId}}
+                                                    {{'label_active' | translate}}
                                                 </mat-slide-toggle>
                                             </td>
                                             <td>
@@ -96,7 +96,7 @@
                                     </tr>
                                     <tr>
                                         <button mat-raised-button color="primary"
-                                            (click)="addNewInformation()">{{'label_add_information' | translate: selectedCulture?.cultureId}}</button>
+                                            (click)="addNewInformation()">{{'label_add_information' | translate}}</button>
                                     </tr>
                                 </table>
                             </div>
@@ -106,7 +106,7 @@
                         <mat-expansion-panel class="image-expansion-panel">
                             <mat-expansion-panel-header>
                                 <mat-panel-title>
-                                    {{'label_images' | translate: selectedCulture?.cultureId}}
+                                    {{'label_images' | translate}}
                                 </mat-panel-title>
                                 <mat-panel-description>
                                 </mat-panel-description>
@@ -121,7 +121,7 @@
                                             </td>
                                             <td>
                                                 <mat-slide-toggle name="imageActive{{i}}" formControlName="active">
-                                                    {{'label_active' | translate: selectedCulture?.cultureId}}
+                                                    {{'label_active' | translate}}
                                                 </mat-slide-toggle>
                                             </td>
                                             <td class="delete-button-cell">
@@ -135,7 +135,7 @@
                                         <input id="fileInput" name="file" (change)="onFileSelected($event)" #fileInput
                                             type="file" hidden>
                                         <button mat-raised-button (click)="fileInput.click()"
-                                            color="primary">{{'label_add_image' | translate: selectedCulture?.cultureId}}</button>
+                                            color="primary">{{'label_add_image' | translate}}</button>
                                     </tr>
                                 </table>
                             </div>
@@ -144,9 +144,9 @@
                 </div>
                 <div class="button-group">
                     <button mat-raised-button color="primary"
-                        (click)="cancel()">{{'label_cancel' | translate: selectedCulture?.cultureId}}</button>
+                        (click)="cancel()">{{'label_cancel' | translate}}</button>
                     <button type="submit" mat-raised-button color="primary"
-                        (click)="confirm()">{{'label_confirm' | translate: selectedCulture?.cultureId}}</button>
+                        (click)="confirm()">{{'label_confirm' | translate}}</button>
                 </div>
             </form>
 
