@@ -33,17 +33,17 @@
   position: relative
 }
 
-.details-footer {
-  text-align: end;
-}
-
-.details-footer button {
-  margin-right: 1.4rem;
+.detail-add-btn {
+  float: right;
   margin-bottom: 1rem;
 }
 
 .mat-table {
   margin-top: 0.8rem;
+}
+
+.customer-dropdown {
+  width: 212%;
 }
 
 /* .productCell .cdk-overlay-pane {

@@ -35,7 +35,7 @@
                                     <mat-form-field class="full-width">
                                         <mat-label>{{'label_document_status' | translate}}
                                         </mat-label>
-                                        <mat-select #dropdown formControlName="code">
+                                        <mat-select formControlName="code">
                                             <mat-option *ngFor="let status of documentStatuses" [value]="status.code">
                                                 {{status.value}}
                                             </mat-option>
@@ -60,10 +60,10 @@
                             </tr>
                             <tr>
                                 <td formGroupName="customer">
-                                    <mat-form-field class="full-width">
+                                    <mat-form-field class="customer-dropdown">
                                         <mat-label>{{'label_customer' | translate}}
                                         </mat-label>
-                                        <mat-select #dropdown formControlName="customerId">
+                                        <mat-select formControlName="customerId">
                                             <mat-option *ngFor="let customer of customers" [value]="customer.code">
                                                 {{customer.value}}
                                             </mat-option>
@@ -77,6 +77,8 @@
                             </tr>
                         </table>
                     </div>
+                    <button class="detail-add-btn" mat-raised-button color="primary"
+                    (click)="addNewDetail()">{{'label_new_detail' | translate}}</button>
                     <div class="table-responsive mat-elevation-z8 details-table" style="padding-left: 0.7rem;">
                         <table class="mat-table">
                             <tbody>
@@ -167,17 +169,22 @@
                                                 </mat-error>
                                             </mat-form-field>
                                         </td>
+                                        <td>
+                                            <button color="primary" (click)="deleteDetail(i)" mat-icon-button>
+                                                <mat-icon>delete</mat-icon>
+                                            </button>
+                                        </td>
                                     </ng-container>
                                 </tr>
                             </tbody>
-                            <tfoot class="details-footer">
+                            <!-- <tfoot class="details-footer">
                                 <td colspan="7">
                                     <button mat-raised-button color="primary"
                                         (click)="addNewDetail()">{{'label_new_detail' | translate}}</button>
                                 </td>
-                            </tfoot>
+                            </tfoot> -->
                         </table>
-                        <mat-paginator #paginator (page)="onPageChange($event)" [length]="datasourceLength"
+                        <mat-paginator #paginator (page)="onPageChange($event)" [length]="detailsDatasourceLength"
                         [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons>
                         </mat-paginator>
                     </div>

@@ -35,8 +35,7 @@
                                     <mat-form-field style="width: 100%">
                                         <mat-label>{{'label_product_type' | translate}}
                                         </mat-label>
-                                        <mat-select #dropdown
-                                        formControlName="productTypeId">
+                                        <mat-select formControlName="productTypeId">
                                             <mat-optgroup *ngFor="let group of productTypes" [label]="group.name">
                                                 <mat-option *ngFor="let data of group.dropdownOption"
                                                     [value]="data.code">

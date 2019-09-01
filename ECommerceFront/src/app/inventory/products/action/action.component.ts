@@ -35,7 +35,6 @@ export class ActionComponent extends ErrorManagerComponent implements AfterViewI
   @ViewChild('loader', { static: false }) loader: LoaderComponent;
   @ViewChild('toaster', { static: false }) toaster: ToasterComponent;
   @ViewChildren('informationValue') informationInput;
-  @ViewChild('dropdown', { static: false }) dropdown: MatSelect;
   loaderEmitter: EventEmitter<boolean> = new EventEmitter<boolean>();
   product: Product;
   action: Action;
@@ -49,7 +48,7 @@ export class ActionComponent extends ErrorManagerComponent implements AfterViewI
     code: new FormControl(''),
     active: new FormControl(false),
     productType: this.fb.group({
-      productTypeId: new FormControl(0)
+      productTypeId: new FormControl(null)
     }),
     informations: this.fb.array([]),
     images: this.fb.array([])
@@ -63,7 +62,7 @@ export class ActionComponent extends ErrorManagerComponent implements AfterViewI
     this.loader.show();
     this.productTypeService.selectAll().then(res => {
       res.data.forEach(d => {
-        this.productTypes.push(new DropdownGroup(d.name, d.children.map(p => ({ code: p.productTypeId.toString(), value: p.name }))));
+        this.productTypes.push(new DropdownGroup(d.name, d.children.map(p => ({ code: p.productTypeId, value: p.name }))));
       });
       this.loader.hide();
     }).catch(() => this.loader.hide());
@@ -145,7 +144,6 @@ export class ActionComponent extends ErrorManagerComponent implements AfterViewI
       this.productService.ProductSelectSingle(this.product.productId).then(res => {
         this.product.asignProduct(res.data);
         FormGroupHelper.mapObjectToFormGroup(this.product, this.productActionForm);
-        this.dropdown.value = res.data.productType.productTypeId.toString();
         this.loader.hide();
       });
     }

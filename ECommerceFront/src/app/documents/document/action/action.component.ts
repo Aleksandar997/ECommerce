@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChildren, EventEmitter, ViewChild, AfterViewInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormControl, FormArray, FormGroup } from '@angular/forms';
-import { MatDialog, MatTableDataSource } from '@angular/material';
+import { MatDialog, MatTableDataSource, MatPaginator } from '@angular/material';
 import { Action } from 'src/app/common/emuns/action';
 import { DocumentStatusService } from 'src/app/services/documentStatus.service';
 import { DropdownOption } from 'src/app/common/models/dropdownOption';
@@ -47,11 +47,10 @@ export class ActionComponent extends ErrorManagerComponent implements OnInit, Af
   documentId: number;
   paging: DetailPaging;
   documentType: string;
+  detailsDatasourceLength = 0;
   detailsDatasource = new MatTableDataSource<any>();
   confirmationModal = new ModalBaseComponent(this.dialog);
   loaderEmitter: EventEmitter<boolean> = new EventEmitter<boolean>();
-  // detailsDisplayColumns = ['productName', 'quantity', 'vat', 'price', 'discount', 'isPercentage', 'priceWithDiscount', 'sum'];
-  detailsDisplayColumns = ['productName', 'quantity', 'vat', 'price', 'discount', 'priceWithDiscount', 'sum'];
   action: Action;
   documentStatuses: Array<DropdownOption>;
   vats: Array<DropdownOption>;
@@ -66,7 +65,7 @@ export class ActionComponent extends ErrorManagerComponent implements OnInit, Af
       code: new FormControl(null),
     }),
     customer: this.fb.group({
-      customerId: new FormControl(0)
+      customerId: new FormControl(null)
     }),
     documentType: this.fb.group({
       code: new FormControl(this.activatedRoute.snapshot.params.type)
@@ -86,16 +85,15 @@ export class ActionComponent extends ErrorManagerComponent implements OnInit, Af
     if (this.action === Action.Edit) {
       this.paging.init('0', '5', this.documentId);
       this.documentService.selectByDocumentId(this.paging).then(res => {
+        this.detailsDatasourceLength = res.count;
         FormGroupHelper.mapObjectToFormGroup(res.data, this.documentActionForm);
-        console.log(this.customers);
-        console.log(this.documentActionForm);
         this.loader.hide();
       }).catch(err => {
         this.loader.hide();
         this.toaster.openSnackBar('Error', ResponseStatus.Error);
       });
     }
-    this.addNewDetail();
+    // this.addNewDetail();
   }
 
   getLists() {
@@ -107,8 +105,7 @@ export class ActionComponent extends ErrorManagerComponent implements OnInit, Af
       res.data.forEach(vat => this.vats.push(new DropdownOption(vat.code, (vat.code + '%'))));
     }).catch(() => this.loader.hide());
     this.customerService.selectAll().then(res => {
-      res.data.forEach(c => this.customers.push(new DropdownOption(c.customerId.toString(), `${c.firstName} ${c.lastName}`)));
-      console.log(this.customers);
+      res.data.forEach(c => this.customers.push(new DropdownOption(c.customerId, `${c.firstName} ${c.lastName}`)));
       if (this.action !== Action.Edit) {
         this.loader.hide();
       }
@@ -120,8 +117,10 @@ export class ActionComponent extends ErrorManagerComponent implements OnInit, Af
   }
 
   addNewDetail() {
-    this.products.push(new Array<DropdownOption>());
-    this.getDocumentDetails.push(this.getEmptyDetail());
+    this.detailsDatasourceLength++;
+    this.products.unshift(new Array<DropdownOption>());
+    this.getDocumentDetails.insert(0, this.getEmptyDetail());
+    // this.getDocumentDetails.removeAt(this.getDocumentDetails.value.length - 1);
     this.detailsDatasource.data = this.getDocumentDetails.controls;
   }
 
@@ -149,7 +148,7 @@ export class ActionComponent extends ErrorManagerComponent implements OnInit, Af
         code: new FormControl(null)
       }),
       price: new FormControl(null),
-      discount: new FormControl(null),
+      discount: new FormControl(0),
       isPercentage: new FormControl(false),
       priceWithDiscount: new FormControl({ value: null, disabled: true }),
       sum: new FormControl({ value: null, disabled: true })
@@ -162,9 +161,7 @@ export class ActionComponent extends ErrorManagerComponent implements OnInit, Af
 
   confirm() {
     let document = new Document();
-    // Object.assign(document, FormGroupHelper.mapFormGroupToObject(this.documentActionForm, Document) as Document)
     document = FormGroupHelper.mapFormGroupToObject(this.documentActionForm, Document);
-    // document.assignObject(this.documentActionForm.getRawValue());
     this.confirmationModal.openDialog(new ModalBase('confirm_document_title', 'confirm_document_title', null, this.loaderEmitter, () => {
       this.loaderEmitter.emit(true);
       this.documentService.postObject(document).then(res => {
@@ -193,27 +190,17 @@ export class ActionComponent extends ErrorManagerComponent implements OnInit, Af
     const pwd = detail.get('priceWithDiscount').value;
     const quantity = detail.get('quantity').value;
     detail.get('sum').setValue(
-      pwd && pwd !== 0 && quantity && quantity !== 0 ? (pwd * quantity) : null
+      pwd * quantity
     );
   }
 
   calculatePriceWithDiscount(detail: FormGroup) {
     const value: number = detail.get('discount').value;
-
     const price = detail.get('price').value;
     detail.get('priceWithDiscount').setValue(
-      price && price !== 0 && value && value !== 0 ? (price - ((value * price) / 100)) : null
+      price - ((value * price) / 100)
     );
     return;
-    // const value: number = detail.get('discount').value;
-    // if (detail.get('isPercentage').value) {
-    //   const price = detail.get('price').value;
-    //   detail.get('priceWithDiscount').setValue((price - ((value * price) / 100)));
-    //   return;
-    // }
-    // detail.get('priceWithDiscount').setValue(
-    //   detail.get('discount').value !== 0 ? (detail.get('price').value - detail.get('discount').value) : detail.get('price').value
-    // );
   }
 
   calculateDocumentSum(detail: FormGroup) {
@@ -221,17 +208,32 @@ export class ActionComponent extends ErrorManagerComponent implements OnInit, Af
     let areSumsZero = true;
     this.getDocumentDetails.controls.forEach(dd => {
       const ddSum = dd.get('sum').value;
-      if (ddSum !== 0 && ddSum != null) {
-        areSumsZero = false;
-      }
-      if (ddSum !== 0) {
-        sum += ddSum;
-      }
+      areSumsZero = false;
+      sum += ddSum;
     });
     sum = areSumsZero ? null : sum;
-    if (sum !== 0) {
-      this.documentActionForm.get('sum').setValue(sum);
-    }
+    this.documentActionForm.get('sum').setValue(sum);
+  }
+
+  deleteDetail(index: number) {
+    this.getDocumentDetails.removeAt(index);
+  }
+
+  getDetails() {
+    this.loader.show();
+    this.documentService.detailsSelectAllByDocument(this.paging).then(res => {
+      this.detailsDatasourceLength = res.count;
+      FormGroupHelper.mapArrayToFormArray(res.data, this.getDocumentDetails, 'documentDetails');
+      this.loader.hide();
+    }).catch(err => {
+      this.loader.hide();
+      this.toaster.openSnackBar('Error', ResponseStatus.Error);
+    });
+  }
+
+  onPageChange(size: any) {
+    this.paging.onPageChange(size);
+    this.getDetails();
   }
 
 }

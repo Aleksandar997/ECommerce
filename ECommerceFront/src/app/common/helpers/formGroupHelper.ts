@@ -51,11 +51,19 @@ export class FormGroupHelper {
                 } else {
                     const nodePath = parentName ? parentName + '.' + p : p;
                     formGroup.get(p).setValue(obj[p]);
-                    if (this.disabledProps.includes(nodePath)) {
+                    if (this.disabledProps && this.disabledProps.includes(nodePath)) {
                         formGroup.get(p).disable({onlySelf: true});
                     }
                 }
             }
+        });
+    }
+
+    static async mapArrayToFormArray(objs: Array<any>, formArray: FormArray, parentName: string = null) {
+        formArray.clear();
+        objs.forEach(obj => {
+            formArray.push(this.getFormGroup(obj));
+            this.mapObjectToFormGroup(obj, formArray.at(objs.indexOf(obj)) as FormGroup, parentName);
         });
     }
 

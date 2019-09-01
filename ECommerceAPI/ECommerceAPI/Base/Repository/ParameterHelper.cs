@@ -24,7 +24,7 @@ namespace ECommerceAPI.Base.Repository
             foreach (var prop in enumerable.First().GetType().GetProperties())
             {
                 var column = prop.PropertyType;
-                dt.Columns.Add(prop.Name, column);
+                dt.Columns.Add(prop.Name, Nullable.GetUnderlyingType(column) ?? column);
             }
             foreach (var row in enumerable)
             {

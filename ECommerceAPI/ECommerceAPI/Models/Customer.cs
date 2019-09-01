@@ -4,7 +4,6 @@ namespace ECommerceAPI.Models
 {
     public class Customer
     {
-        [Range(1, int.MaxValue, ErrorMessage = "customer_required")]
         public int CustomerId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }

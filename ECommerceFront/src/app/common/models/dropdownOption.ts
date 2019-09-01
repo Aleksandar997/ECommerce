@@ -1,8 +1,8 @@
 export class DropdownOption {
-    code: string;
+    code: any;
     value: string;
     // tslint:disable-next-line:variable-name
-    constructor(_code: string = null, _value: string = null) {
+    constructor(_code: any = null, _value: string = null) {
         this.code = _code;
         this.value = _value;
     }

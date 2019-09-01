@@ -1110,6 +1110,7 @@ BEGIN
 
 	SELECT 
 	P.ProductId,
+	Code,
 	[Name]
 	FROM Product P
 	INNER JOIN @details DD
