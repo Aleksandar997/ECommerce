@@ -26,6 +26,7 @@ namespace ECommerceAPI.Builders.Implementation
                 _detail.Add(new DocumentDetail()
                 {
                     DocumentDetailId = dd.DocumentDetailId,
+                    DocumentType = dd.DocumentType,
                     DocumentId = dd.DocumentId,
                     Quantity = dd.Quantity,
                     Price = dd.Price,

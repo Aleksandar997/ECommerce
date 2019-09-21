@@ -1,6 +1,7 @@
 import { DocumentStatus } from './documentStatus';
 import { DocumentDetail } from './documentDetail';
 import { DocumentType } from './documentType';
+import { Customer } from './customer';
 
 export class Document {
     documentId: number;
@@ -10,6 +11,8 @@ export class Document {
     documentStatus: DocumentStatus;
     documentType: DocumentType;
     documentDetails: Array<DocumentDetail>;
+    customer: Customer;
+
     constructor() {
         this.documentId = null;
         this.code = '';
@@ -18,9 +21,14 @@ export class Document {
         this.documentStatus = new DocumentStatus();
         this.documentType = new DocumentType();
         this.documentDetails = new Array<DocumentDetail>();
+        this.customer = new Customer();
     }
 
     assignObject(init?: Partial<Document>) {
+        Object.assign(this.customer, init.customer);
+        Object.assign(this.documentStatus, init.documentStatus);
+        Object.assign(this.documentType, init.documentType);
+        Object.assign(this.documentDetails, init.documentDetails);
         Object.assign(this, init);
         // Object.assign(this.documentDetails, init.documentDetails);
     }

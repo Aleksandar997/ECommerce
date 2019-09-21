@@ -44,7 +44,7 @@ namespace ECommerceAPI.Repository.Implementation
                             dd.DocumentDetailId,
                             ProductCode = dd.Product.Code,
                             dd.Quantity,
-                            Vat = dd.Vat.Code,
+                            Vat = dd.Vat != null ? dd.Vat.Code : null,
                             dd.Price,
                             dd.Discount,
                             dd.PriceWithDiscount,
@@ -81,10 +81,6 @@ namespace ECommerceAPI.Repository.Implementation
                     });
                     using (var multi = await connection.DbConnection.QueryMultipleAsync("[dbo].[Document_SelectAll]", param, null, null, CommandType.StoredProcedure))
                     {
-                        //var details = documentDetailsBuilder.BuildBaseInformation(multi.Read<DocumentDetail>().ToList())
-                        //                                    .BuildProducts(multi.Read<Product>().ToList())
-                        //                                    .BuildVat(multi.Read<Vat>().ToList())
-                        //                                    .Build();
                         var documents = documentBuilder.BuildBaseInformation(multi.Read<Document>().ToList())
                                                        .BuildDocumentTypes(multi.Read<DocumentType>().ToList())
                                                        .BuildDocumentStatuses(multi.Read<DocumentStatus>().ToList())

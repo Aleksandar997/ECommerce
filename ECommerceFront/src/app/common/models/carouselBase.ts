@@ -21,7 +21,6 @@ export class CarouselBaseList extends Array<CarouselBase> {
         if (!images) {
             return;
         }
-        // tslint:disable-next-line:prefer-for-of
         for (let index = 0; images.length > 0; index++) {
             const i = images[index];
             if (index % 4 === 0) {
@@ -29,5 +28,8 @@ export class CarouselBaseList extends Array<CarouselBase> {
             }
         }
         this.setActive(0);
+    }
+    clear() {
+        this.splice(0, this.length);
     }
 }

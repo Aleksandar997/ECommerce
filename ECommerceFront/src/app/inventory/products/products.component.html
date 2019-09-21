@@ -42,14 +42,14 @@
                     </ng-container>
                     <ng-container matColumnDef="select">
                         <th mat-header-cell *matHeaderCellDef>
-                            <mat-checkbox (change)="$event ? masterToggle() : null"
-                                [checked]="selection.hasValue() && isAllSelected()"
-                                [indeterminate]="selection.hasValue() && !isAllSelected()">
+                            <mat-checkbox (change)="$event ? tableCheckbox.masterToggle() : null"
+                                [checked]="tableCheckbox.selection.hasValue() && tableCheckbox.isAllSelected()"
+                                [indeterminate]="tableCheckbox.selection.hasValue() && !tableCheckbox.isAllSelected()">
                             </mat-checkbox>
                         </th>
                         <td mat-cell *matCellDef="let row">
-                            <mat-checkbox (click)="$event.stopPropagation()" (change)="selectRow(row)"
-                                [checked]="selection.isSelected(row)">
+                            <mat-checkbox (click)="$event.stopPropagation()" (change)="tableCheckbox.selectRow(row)"
+                                [checked]="tableCheckbox.selection.isSelected(row)">
                             </mat-checkbox>
                         </td>
                     </ng-container>

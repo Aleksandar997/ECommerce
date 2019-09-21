@@ -36,14 +36,15 @@ namespace ECommerceAPI
             services.AddSingleton<IProductTypeRepository, ProductTypeRepository>(c => new ProductTypeRepository(ConnectionString));
             services.AddSingleton<IProductRepository, ProductRepository>(c => new ProductRepository(ConnectionString, services.BuildServiceProvider().GetService<IProductsBuilder>()));
 
+            services.AddSingleton<ICustomersBuilder, CustomersBuilder>();
+            services.AddSingleton<ICustomerRepository, CustomerRepository>(c => new CustomerRepository(ConnectionString, services.BuildServiceProvider().GetService<ICustomersBuilder>()));
+
             services.AddSingleton<IUserBuilder, UserBuilder>();
             services.AddSingleton<IUserRepository, UserRepository>(c => new UserRepository(ConnectionString, services.BuildServiceProvider().GetService<IUserBuilder>()));
 
             services.AddSingleton<IDocumentStatusRepository, DocumentStatusRepository>(c => new DocumentStatusRepository(ConnectionString));
 
             services.AddSingleton<IVatRepository, VatRepository>(c => new VatRepository(ConnectionString));
-
-            services.AddSingleton<ICustomerRepository, CustomerRepository>(c => new CustomerRepository(ConnectionString));
 
             services.AddSingleton<IDocumentsBuilder, DocumentsBuilder>();
             services.AddSingleton<IDocumentDetailsBuilder, DocumentDetailsBuilder>();

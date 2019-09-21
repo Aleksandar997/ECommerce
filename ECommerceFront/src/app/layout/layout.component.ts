@@ -3,6 +3,7 @@ import { User } from '../models/user';
 import { LocalData } from '../common/helpers/localData';
 import { Menu } from '../models/menu';
 import { trigger, state, style, transition, animate } from '@angular/animations';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-layout',
@@ -21,12 +22,20 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
 export class LayoutComponent implements OnInit {
 
   menus: Array<Menu>;
-  constructor() {
+  constructor(private router: Router) {
     const user = LocalData.getUser();
     this.menus = JSON.parse(user, null)[0].menu;
   }
 
   ngOnInit() {
+  }
+
+  onParentMenuClick(menu: Menu) {
+    if (menu.children && menu.children.length > 0) {
+      menu.expanded = !menu.expanded;
+      return;
+    }
+    return '/customers';
   }
 
 }

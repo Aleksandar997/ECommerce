@@ -46,6 +46,14 @@
   width: 212%;
 }
 
+.pricelist-input {
+  width: 100%;
+}
+
+.pricelist-header-input {
+  width: 212%;
+}
+
 /* .productCell .cdk-overlay-pane {
   margin-top: 2.5rem;
 } */

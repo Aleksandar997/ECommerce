@@ -12,7 +12,7 @@
                         <table class="full-width" cellspacing="0">
                             <tr>
                                 <td>
-                                    <mat-form-field class="full-width">
+                                    <mat-form-field class="{{!checkIfType('bill')}} ? 'pricelist-header-input' : 'full-width'">
                                         <input matInput name="code" formControlName="code"
                                             placeholder="{{'label_code' | translate}}">
                                         <mat-error *ngIf="documentActionForm.get('code').errors?.serverError">
@@ -20,7 +20,7 @@
                                         </mat-error>
                                     </mat-form-field>
                                 </td>
-                                <td>
+                                <td *ngIf="checkIfType('bill')">
                                     <mat-form-field class="full-width">
                                         <input matInput name="sum" formControlName="sum"
                                             placeholder="{{'label_sum' | translate}}">
@@ -58,7 +58,7 @@
                                     </mat-form-field>
                                 </td>
                             </tr>
-                            <tr>
+                            <tr *ngIf="checkIfType('bill')">
                                 <td formGroupName="customer">
                                     <mat-form-field class="customer-dropdown">
                                         <mat-label>{{'label_customer' | translate}}
@@ -86,7 +86,7 @@
                                     *ngFor="let detail of getDocumentDetails?.controls; let i = index">
                                     <ng-container [formGroupName]="i">
                                         <td>
-                                            <mat-form-field formGroupName="product">
+                                            <mat-form-field formGroupName="product" class="{{!checkIfType('bill')}} ? 'pricelist-input' : 'input'">
                                                 <mat-label>label_productName</mat-label>
                                                 <input formControlName="code" name="product{{i}}" #productInput matInput
                                                     [matAutocomplete]="auto" (ngModelChange)="onInputChange(i, $event)">
@@ -103,7 +103,7 @@
                                                 </mat-error>
                                             </mat-form-field>
                                         </td>
-                                        <td>
+                                        <td *ngIf="checkIfType('bill')">
                                             <mat-form-field class="input">
                                                 <input matInput type="number" name="quantity{{i}}"
                                                     formControlName="quantity" placeholder="label_quantity"
@@ -113,7 +113,7 @@
                                                 </mat-error>
                                             </mat-form-field>
                                         </td>
-                                        <td>
+                                        <td *ngIf="checkIfType('bill')">
                                             <mat-form-field formGroupName="vat" class="input">
                                                 <mat-label>
                                                     {{'label_vat' | translate}}
@@ -129,7 +129,7 @@
                                             </mat-form-field>
                                         </td>
                                         <td>
-                                            <mat-form-field class="input">
+                                            <mat-form-field class="{{!checkIfType('bill')}} ? 'pricelist-input' : 'input'">
                                                 <input matInput type="number" name="price{{i}}" formControlName="price"
                                                     placeholder="label_price"
                                                     (ngModelChange)="detailCalculation(detail)">
@@ -138,7 +138,7 @@
                                                 </mat-error>
                                             </mat-form-field>
                                         </td>
-                                        <td>
+                                        <td *ngIf="checkIfType('bill')">
                                             <mat-form-field class="input">
                                                 <input matInput type="number" name="discount{{i}}"
                                                     formControlName="discount" placeholder="label_discount"
@@ -149,7 +149,7 @@
                                                 <mat-icon matSuffix>%</mat-icon>
                                             </mat-form-field>
                                         </td>
-                                        <td>
+                                        <td *ngIf="checkIfType('bill')">
                                             <mat-form-field class="input">
                                                 <input matInput type="number" name="priceWithDiscount{{i}}"
                                                     formControlName="priceWithDiscount"
@@ -159,7 +159,7 @@
                                                 </mat-error>
                                             </mat-form-field>
                                         </td>
-                                        <td>
+                                        <td *ngIf="checkIfType('bill')">
                                             <mat-form-field class="input">
                                                 <input matInput type="number" name="sum{{i}}" formControlName="sum"
                                                     placeholder="label_sum"

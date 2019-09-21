@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ChangeDetectorRef, ApplicationRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subject, Observable, Subscription } from 'rxjs';
 import { DocumentService } from 'src/app/services/document.service';
@@ -13,6 +13,9 @@ import { DocumentDetail } from 'src/app/models/documentDetail';
 import { timeInterval } from 'rxjs/operators';
 import { BasePaging } from 'src/app/models/paging/basePaging';
 import { DetailPaging } from 'src/app/models/paging/detailPaging';
+import { SelectionModel } from '@angular/cdk/collections';
+import { StorageHelper } from 'src/app/common/helpers/storageHelper';
+import { TableCheckbox } from 'src/app/common/helpers/tableCheckbox';
 
 @Component({
   selector: 'document',
@@ -32,6 +35,7 @@ export class DocumentComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('detailsPaginator', { static: true }) detailsPaginator: MatPaginator;
   @ViewChild('loader', {static: false}) loader: LoaderComponent;
   @ViewChild('toaster', { static: false }) toaster: ToasterComponent;
+  tableCheckbox: TableCheckbox<Document>;
   documentType: string;
   routeSub: Subscription;
   paging: DocumentPaging;
@@ -40,10 +44,13 @@ export class DocumentComponent implements OnInit, OnDestroy, AfterViewInit {
   detailsDatasourceLength: number;
   documentDataSource: MatTableDataSource<Document>;
   detailsDataSource: MatTableDataSource<DocumentDetail>;
-  documentDisplayedColumns: string[] = ['code', 'documentType', 'documentStatus', 'date', 'sum', 'customer', 'edit'];
+  documentDisplayedColumns: string[] = ['code', 'documentType', 'documentStatus', 'date', 'sum', 'customer', 'select', 'edit'];
   detailsDisplayColumns: string[] = ['product', 'quantity', 'vat', 'price', 'discount', 'priceWithDiscount', 'sum'];
   expandedElement: Document = null;
-  constructor(private activatedRoute: ActivatedRoute, private documentService: DocumentService) {
+  constructor(private activatedRoute: ActivatedRoute, private documentService: DocumentService, private cdRef: ChangeDetectorRef) {
+  }
+
+  ngOnInit() {
     this.routeSub = this.activatedRoute.params.subscribe(param => {
       if (param.type) {
         this.documentType = param.type;
@@ -52,12 +59,17 @@ export class DocumentComponent implements OnInit, OnDestroy, AfterViewInit {
         this.activatedRoute.snapshot.data.title = this.documentType + this.activatedRoute.snapshot.data.title;
         this.documentDataSource = new MatTableDataSource<Document>();
         this.detailsDataSource = new MatTableDataSource<DocumentDetail>();
+        this.tableCheckbox = new TableCheckbox(
+          new SelectionModel<Document>(), this.documentDataSource.data, 'selectedDocuments', 'documentId');
+        if (this.documentType === 'pricelist') {
+          this.documentDisplayedColumns = ['code', 'documentType', 'documentStatus', 'date', 'select', 'edit'];
+          this.detailsDisplayColumns = ['product', 'price'];
+        }
+        if (this.loader) {
+          this.afterRender();
+        }
       }
     });
-  }
-
-  ngOnInit() {
-
   }
 
   onFilterChange() {
@@ -79,16 +91,22 @@ export class DocumentComponent implements OnInit, OnDestroy, AfterViewInit {
     this.documentService.selectAll(this.paging).then(res => {
       this.documentDatasourceLength = res.count;
       this.documentDataSource = new MatTableDataSource<Document>(res.data);
+      this.tableCheckbox.setData(res.data);
       this.loader.hide();
     }).catch(err => {
+      console.log(err);
       this.loader.hide();
       this.toaster.openSnackBar('Error', ResponseStatus.Error);
     });
   }
 
-  ngAfterViewInit() {
+  afterRender() {
     this.getDocuments();
     this.documentDataSource.paginator = this.paginator;
+  }
+
+  ngAfterViewInit() {
+    this.afterRender();
   }
 
   ngOnDestroy() {
@@ -115,5 +133,4 @@ export class DocumentComponent implements OnInit, OnDestroy, AfterViewInit {
       this.toaster.openSnackBar('Error', ResponseStatus.Error);
     });
   }
-
 }

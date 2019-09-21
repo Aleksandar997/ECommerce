@@ -29,7 +29,7 @@ export class ActionComponent extends ErrorManagerComponent implements OnInit, Af
 
   @ViewChildren('productSelect') productSelect;
   @ViewChild('toaster', { static: false }) toaster: ToasterComponent;
-  @ViewChild('loader', {static: false}) loader: LoaderComponent;
+  @ViewChild('loader', { static: false }) loader: LoaderComponent;
   constructor(private activatedRoute: ActivatedRoute, private fb: FormBuilder, private vatService: VatService, private router: Router,
               private dialog: MatDialog, private documentStatusService: DocumentStatusService, private productService: ProductService,
               private documentService: DocumentService, private customerService: CustomerService) {
@@ -58,26 +58,43 @@ export class ActionComponent extends ErrorManagerComponent implements OnInit, Af
   customers: Array<DropdownOption>;
   documentActionForm = this.fb.group({
     documentId: new FormControl(0),
-    code: new FormControl({ value: '', disabled: true }),
+    code: new FormControl({ value: null, disabled: true }),
     date: new FormControl(new Date()),
     sum: new FormControl({ value: 0, disabled: true }),
     documentStatus: this.fb.group({
       code: new FormControl(null),
+
+      documentStatusId: new FormControl(0),
+      value: new FormControl(null),
+      active: new FormControl(false),
     }),
     customer: this.fb.group({
-      customerId: new FormControl(null)
+      customerId: new FormControl(null),
+
+      firstName: new FormControl(null),
+      lastName: new FormControl(null),
+      address: new FormControl(null),
+      floor: new FormControl(null),
+      flat: new FormControl(null),
+      contactNumber: new FormControl(null),
     }),
     documentType: this.fb.group({
-      code: new FormControl(this.activatedRoute.snapshot.params.type)
+      code: new FormControl(this.activatedRoute.snapshot.params.type),
+
+      documentTypeId: new FormControl(0),
+      value: new FormControl(null),
+      active: new FormControl(false),
     }),
     documentDetails: this.fb.array([])
   });
 
   ngOnInit() {
-    FormGroupHelper.setDisabledProps(['sum',
-                                      'documentDetails.sum',
-                                      'documentDetails.priceWithDiscount',
-                                      'code']);
+    if (this.checkIfType('bill')) {
+      FormGroupHelper.setDisabledProps(['sum',
+                                        'documentDetails.sum',
+                                        'documentDetails.priceWithDiscount',
+                                        'code']);
+    }
   }
 
   ngAfterViewInit() {
@@ -140,6 +157,7 @@ export class ActionComponent extends ErrorManagerComponent implements OnInit, Af
   getEmptyDetail() {
     return this.fb.group({
       documentDetailId: new FormControl(0),
+      documentType: new FormControl(this.activatedRoute.snapshot.params.type),
       product: this.fb.group({
         code: new FormControl(null)
       }),
@@ -162,6 +180,7 @@ export class ActionComponent extends ErrorManagerComponent implements OnInit, Af
   confirm() {
     let document = new Document();
     document = FormGroupHelper.mapFormGroupToObject(this.documentActionForm, Document);
+    console.log(document);
     this.confirmationModal.openDialog(new ModalBase('confirm_document_title', 'confirm_document_title', null, this.loaderEmitter, () => {
       this.loaderEmitter.emit(true);
       this.documentService.postObject(document).then(res => {
@@ -173,6 +192,7 @@ export class ActionComponent extends ErrorManagerComponent implements OnInit, Af
         this.toaster.openSnackBar('Success', ResponseStatus.Success);
         this.cancel();
       }).catch(err => {
+        console.log(err);
         this.confirmationModal.closeDialog();
         this.loaderEmitter.emit(false);
         this.addErrors(err, this.documentActionForm);
@@ -234,6 +254,10 @@ export class ActionComponent extends ErrorManagerComponent implements OnInit, Af
   onPageChange(size: any) {
     this.paging.onPageChange(size);
     this.getDetails();
+  }
+
+  checkIfType(type: string) {
+    return type === this.documentType;
   }
 
 }

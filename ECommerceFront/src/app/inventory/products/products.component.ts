@@ -15,6 +15,7 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
 import { Image } from 'src/app/models/image';
 import { CarouselBaseList } from 'src/app/common/models/carouselBase';
 import { BasePaging } from 'src/app/models/paging/basePaging';
+import { TableCheckbox } from 'src/app/common/helpers/tableCheckbox';
 
 @Component({
   selector: 'product',
@@ -33,6 +34,7 @@ export class ProductsComponent implements AfterViewInit, OnDestroy {
   selection = new SelectionModel<Product>(true, []);
   dataSource: MatTableDataSource<Product>;
   datasourceLength: number;
+  tableCheckbox: TableCheckbox<Product>;
   @ViewChild('toaster', { static: false }) toaster: ToasterComponent;
   @ViewChild('loader', { static: false }) loader: LoaderComponent;
   @ViewChild('paginator', { static: true }) paginator: MatPaginator;
@@ -45,6 +47,7 @@ export class ProductsComponent implements AfterViewInit, OnDestroy {
   constructor(private productService: ProductService, private dialog: MatDialog, private router: Router) {
     this.dataSource = new MatTableDataSource();
     this.carouselImages = new CarouselBaseList();
+    this.tableCheckbox = new TableCheckbox(this.selection, this.dataSource.data, 'selectedProducts', 'productId');
   }
 
   ngAfterViewInit() {
@@ -70,62 +73,16 @@ export class ProductsComponent implements AfterViewInit, OnDestroy {
   getProducts() {
     this.loader.show();
     this.productService.ProductSelectAll(this.paging).then(res => {
-      this.dataSource = new MatTableDataSource(res.data);
       this.datasourceLength = res.count;
-      this.selectFromCache(res.data);
+      this.dataSource = new MatTableDataSource(res.data);
+      this.tableCheckbox.setData(this.dataSource.data);
+      this.tableCheckbox.selectFromCache(this.dataSource.data);
+      // this.selectFromCache(res.data);
       this.loader.hide();
     }).catch(err => {
       this.loader.hide();
     });
   }
-
-  isAllSelected() {
-    const numSelected = this.selection.selected.length;
-    const numRows = this.dataSource.data.length;
-    return numSelected === numRows || numSelected > numRows;
-  }
-
-  masterToggle() {
-    if (this.isAllSelected()) {
-      this.selection.clear();
-      this.dataSource.data.forEach(row => this.deSelectRow(row));
-      return;
-    }
-    this.dataSource.data.forEach(row => this.selection.select(row));
-    const selectedRows = StorageHelper.getData('selectedProducts');
-    if (selectedRows) {
-      StorageHelper.setData('selectedProducts', [...selectedRows, ...this.dataSource.data.map(p => p.productId)]);
-      return;
-    }
-    StorageHelper.setData('selectedProducts', this.dataSource.data.map(p => p.productId));
-  }
-
-  selectRow(selectedRow) {
-    if (this.selection.isSelected(selectedRow)) {
-      this.deSelectRow(selectedRow);
-      return;
-    }
-    this.selection.toggle(selectedRow);
-    let idList = StorageHelper.getData('selectedProducts');
-    if (idList) {
-      idList = !idList.length ? [idList, selectedRow.productId] : [...idList, selectedRow.productId];
-      StorageHelper.setData('selectedProducts', idList);
-      return;
-    }
-    StorageHelper.setData('selectedProducts', selectedRow.productId);
-  }
-
-  deSelectRow(deSelectedRow) {
-    StorageHelper.setData('selectedProducts', StorageHelper.getData('selectedProducts').filter(p => p !== deSelectedRow.productId));
-  }
-
-  selectFromCache(products: Array<Product>) {
-    const data = StorageHelper.getData('selectedProducts');
-    const selectedRows: Array<number> = Symbol.iterator in Object(data) ? [...data] : [data];
-    const selectedProducts = products.filter(p => selectedRows.includes(p.productId));
-    selectedProducts.forEach(p => this.selection.toggle(p));
-  }
-
   deleteSelected() {
     this.confirmationModal.openDialog(new ModalBase('delete_product_title', 'delete_product_text', null, this.loaderEmitter, () => {
       this.loaderEmitter.emit(true);
@@ -152,7 +109,8 @@ export class ProductsComponent implements AfterViewInit, OnDestroy {
   }
 
   expandRow(row) {
-    this.carouselImages.populate(row.images);
+    this.carouselImages.clear();
+    this.carouselImages.populate(Object.create(row.images));
     this.expandedElement = this.expandedElement === row ? null : row;
   }
 
@@ -160,9 +118,3 @@ export class ProductsComponent implements AfterViewInit, OnDestroy {
     StorageHelper.deleteData('selectedProducts');
   }
 }
-
-// export class TableExpandableRowsExample {
-//   dataSource = ELEMENT_DATA;
-//   columnsToDisplay = ['name', 'weight', 'symbol', 'position'];
-//   expandedElement: PeriodicElement | null;
-// }

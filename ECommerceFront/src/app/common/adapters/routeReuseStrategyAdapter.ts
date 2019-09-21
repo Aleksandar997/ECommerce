@@ -5,24 +5,24 @@ export class RouteReuseStrategyAdapter implements RouteReuseStrategy {
   handlers: { [key: string]: DetachedRouteHandle } = {};
 
   shouldDetach(route: ActivatedRouteSnapshot): boolean {
-    console.log('shouldDetach')
+    console.log('shouldDetach');
     return route.data.shouldReuse || false;
   }
 
   store(route: ActivatedRouteSnapshot, handle: {}): void {
-    console.log('store')
+    console.log('store');
     if (route.data.shouldReuse) {
       this.handlers[route.routeConfig.path] = handle;
     }
   }
 
   shouldAttach(route: ActivatedRouteSnapshot): boolean {
-    console.log('shouldAttach')
+    console.log('shouldAttach');
     return !!route.routeConfig && !!this.handlers[route.routeConfig.path];
   }
 
   retrieve(route: ActivatedRouteSnapshot): {} {
-    console.log('retrieve')
+    console.log('retrieve');
     if (!route.routeConfig) {
         return null;
     }
@@ -30,7 +30,7 @@ export class RouteReuseStrategyAdapter implements RouteReuseStrategy {
   }
 
   shouldReuseRoute(future: ActivatedRouteSnapshot, curr: ActivatedRouteSnapshot): boolean {
-    console.log('shouldReuseRoute')
+    console.log('shouldReuseRoute');
     return future.data.shouldReuse || false;
   }
 

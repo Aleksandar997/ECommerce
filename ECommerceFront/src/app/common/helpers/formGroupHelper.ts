@@ -12,29 +12,10 @@ export class FormGroupHelper {
         this.disabledProps = props;
     }
 
-    // static async mapObjectToFormGroup(obj: any, formGroup: FormGroup) {
-    //     Object.keys(obj).forEach(p => {
-    //         if (obj[p] instanceof Array) {
-    //             const formArray = formGroup.get(p) as FormArray;
-    //             obj[p].forEach(child => {
-    //                 formArray.push(this.getFormGroup(child));
-    //             });
-    //         } else if (formGroup.contains(p)) {
-    //             if (formGroup.get(p) instanceof FormGroup) {
-    //                 Object.keys(obj[p]).forEach(child => {
-    //                     if (formGroup.get(p).get(child)) {
-    //                         formGroup.get(p).get(child).setValue(obj[p][child]);
-    //                     }
-    //                 });
-    //             } else {
-    //                 formGroup.get(p).setValue(obj[p]);
-    //             }
-    //         }
-    //     });
-    //     return formGroup;
-    // }
-
     static async mapObjectToFormGroup(obj: any, formGroup: FormGroup, parentName: string = null) {
+        if (!obj) {
+            return;
+        }
         Object.keys(obj).forEach(p => {
             if (formGroup.get(p) != null) {
                 formGroup.get(p).enable({onlySelf: true});

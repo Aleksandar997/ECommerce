@@ -11,26 +11,26 @@ namespace ECommerceAPI.Builders.Implementation
     public class ProductsBuilder : IProductsBuilder
     {
         protected List<Product> _products = new List<Product>();
-        public ProductsBuilder BuildProductType(List<ProductType> productType)
+        public IProductsBuilder BuildProductType(List<ProductType> productType)
         {
             productType = productType.IfNull();
             _products.ForEach(p => p.ProductType = productType.Where(pt => pt.ProductTypeId == p.ProductTypeId).FirstOrDefault());
             return this;
         }
-        public ProductsBuilder BuildImages(List<Image> Images)
+        public IProductsBuilder BuildImages(List<Image> Images)
         {
             Images = Images.IfNull();
             Images.ForEach(i => i.Path = (!String.IsNullOrEmpty(i.Path) ? i.Path : FileService.GetFileHostPath(i.Name)));
             _products.ForEach(p => p.Images.AddRange(Images.Where(i => i.ProductId == p.ProductId)));
             return this;
         }
-        public ProductsBuilder BuildInformations(List<Information> Informations)
+        public IProductsBuilder BuildInformations(List<Information> Informations)
         {
             Informations = Informations.IfNull();
             _products.ForEach(p => p.Informations.AddRange(Informations.Where(i => i.ProductId == p.ProductId)));
             return this;
         }
-        public ProductsBuilder BuildBaseInformation(List<Product> products)
+        public IProductsBuilder BuildBaseInformation(List<Product> products)
         {
             products = products.IfNull();
             products.ForEach(pp =>

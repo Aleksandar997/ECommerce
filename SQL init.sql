@@ -253,7 +253,7 @@ DocumentStatusId int NOT NULL,
 Code nvarchar(50) NULL,
 Number int NULL,
 [Date] Date NOT NULL,
-[Sum] decimal(18,4) NOT NULL,
+[Sum] decimal(18,4) NULL,
 CustomerId int NULL,
 sysDTEdit datetime NULL,
 sysUserEditId int NULL,
@@ -279,12 +279,12 @@ CREATE TABLE DocumentDetail(
 DocumentDetailId int identity(1,1) NOT NULL,
 DocumentId int NOT NULL,
 ProductId int NOT NULL,
-Quantity int NOT NULL,
-VatId int NOT NULL,
+Quantity int NULL,
+VatId int NULL,
 Price decimal(18,4) NOT NULL,
 Discount decimal(18,4) NULL,
-PriceWithDiscount decimal(18,4) NOT NULL,
-[Sum] decimal(18,4) NOT NULL,
+PriceWithDiscount decimal(18,4) NULL,
+[Sum] decimal(18,4) NULL,
 sysDTEdit datetime NULL,
 sysUserEditId int NULL,
 sysDTCreated datetime NULL,
@@ -327,12 +327,12 @@ ParentGuid uniqueidentifier NULL
 CREATE TYPE DocumentDetailList AS TABLE(
 DocumentDetailId int NOT NULL,
 ProductCode nvarchar(100) NOT NULL,
-Quantity int NOT NULL,
-Vat nvarchar(10) NOT NULL,
+Quantity int NULL,
+Vat nvarchar(10) NULL,
 Price decimal(18,2) NOT NULL,
-Discount int NOT NULL,
-PriceWithDiscount decimal(18,2) NOT NULL,
-[Sum] decimal(18, 2) NOT NULL
+Discount int NULL,
+PriceWithDiscount decimal(18,2) NULL,
+[Sum] decimal(18, 2) NULL
 )
 
 --Stored procedures
@@ -869,16 +869,23 @@ GO
 
 CREATE PROCEDURE Customer_SelectAll
 AS BEGIN
-	SELECT 
+	SELECT
 	CustomerId,
 	FirstName,
 	LastName,
 	[Address],
 	[Floor],
-	Flat,
+	[Flat],
 	ContactNumber,
 	UserId
 	FROM Customer
+
+	SELECT
+	UserId,
+	UserName,
+	Email,
+	Active
+	FROM [User]
 END
 GO
 
@@ -925,6 +932,7 @@ BEGIN TRANSACTION
 		ON @DocumentType = DT.Code
 		RIGHT JOIN DocumentStatus DS
 		ON @DocumentStatus = DS.Code
+		WHERE DocumentId = @DocumentId
 	END
 	ELSE
 	BEGIN
@@ -943,7 +951,7 @@ BEGIN TRANSACTION
 						FROM @Details DD
 						INNER JOIN Product P
 						ON P.Code = DD.ProductCode
-						INNER JOIN Vat V
+						LEFT JOIN Vat V
 						ON V.Code = DD.Vat
 						WHERE DD.DocumentDetailId IS NULL OR
 						DD.DocumentDetailId = 0
@@ -987,8 +995,8 @@ BEGIN
 	DocumentStatusId int NOT NULL,
 	Code nvarchar(50) NOT NULL,
 	[Date] date NOT NULL,
-	[Sum] decimal(18,2) NOT NULL,
-	CustomerId int NOT NULL
+	[Sum] decimal(18,2),
+	CustomerId int
 	)
 	INSERT INTO @documents
 	SELECT
@@ -1067,13 +1075,13 @@ BEGIN
 	DECLARE @details AS Table(
 	DocumentDetailId int NOT NULL,
 	DocumentId int NOT NULL,
-	Quantity int NOT NULL,
+	Quantity int NULL,
 	Price decimal(18,2) NOT NULL,
-	Discount decimal(18,2) NOT NULL,
-	PriceWithDiscount decimal(18,2) NOT NULL,
-	[Sum] decimal(18,2) NOT NULL,
+	Discount decimal(18,2) NULL,
+	PriceWithDiscount decimal(18,2) NULL,
+	[Sum] decimal(18,2) NULL,
 	ProductId int NOT NULL,
-	VatId int NOT NULL
+	VatId int NULL
 	)
 	INSERT INTO @details
 	SELECT
@@ -1146,8 +1154,8 @@ AS BEGIN
 	DocumentStatusId int NOT NULL,
 	Code nvarchar(50) NOT NULL,
 	[Date] date NOT NULL,
-	[Sum] decimal(18,2) NOT NULL,
-	CustomerId int NOT NULL
+	[Sum] decimal(18,2) NULL,
+	CustomerId int NULL
 	)
 	INSERT INTO @document
 	SELECT
@@ -1165,28 +1173,33 @@ AS BEGIN
 	DECLARE @details AS Table(
 	DocumentDetailId int NOT NULL,
 	DocumentId int NOT NULL,
-	Quantity int NOT NULL,
+	DocumentType nvarchar(20) NOT NULL,
+	Quantity int NULL,
 	Price decimal(18,2) NOT NULL,
-	Discount decimal(18,2) NOT NULL,
-	PriceWithDiscount decimal(18,2) NOT NULL,
-	[Sum] decimal(18,2) NOT NULL,
+	Discount decimal(18,2) NULL,
+	PriceWithDiscount decimal(18,2) NULL,
+	[Sum] decimal(18,2) NULL,
 	ProductId int NOT NULL,
-	VatId int NOT NULL
+	VatId int NULL
 	)
 	INSERT INTO @details
 	SELECT
 	DocumentDetailId,
-	DocumentId,
+	DD.DocumentId,
+	DT.[Value] as 'DocumentType',
 	Quantity,
 	Price,
 	Discount,
 	PriceWithDiscount,
-	[Sum],
+	DD.[Sum],
 	ProductId,
 	VatId
 	FROM 
-	DocumentDetail
-	WHERE DocumentId = @DocumentId
+	DocumentDetail DD
+	INNER JOIN @document D
+	ON D.DocumentId = DD.DocumentId
+	LEFT JOIN DocumentType DT
+	ON DT.DocumentTypeId = D.DocumentTypeId
 	ORDER BY
 	CASE WHEN @SortBy = N'Quantity' AND @SortOrder = 1 THEN Quantity END ASC,
 	CASE WHEN @SortBy = N'Quantity' AND @SortOrder = 2 THEN Quantity END DESC,
@@ -1196,8 +1209,8 @@ AS BEGIN
 	CASE WHEN @SortBy = N'Discount' AND @SortOrder = 2 THEN Discount END DESC,
 	CASE WHEN @SortBy = N'PriceWithDiscount' AND @SortOrder = 1 THEN PriceWithDiscount END ASC,
 	CASE WHEN @SortBy = N'PriceWithDiscount' AND @SortOrder = 2 THEN PriceWithDiscount END DESC,
-	CASE WHEN @SortBy = N'Sum' AND @SortOrder = 1 THEN [Sum] END ASC,
-	CASE WHEN @SortBy = N'Sum' AND @SortOrder = 2 THEN [Sum] END DESC
+	CASE WHEN @SortBy = N'Sum' AND @SortOrder = 1 THEN DD.[Sum] END ASC,
+	CASE WHEN @SortBy = N'Sum' AND @SortOrder = 2 THEN DD.[Sum] END DESC
 	OFFSET @Skip ROWS
 	FETCH NEXT @Take ROWS ONLY
 
@@ -1288,7 +1301,10 @@ BEGIN
 
 	SELECT 
 	@Number = MAX(ISNULL(Number, 0) + 1)
-	FROM Document
+	FROM Document D
+	INNER JOIN DocumentType DT
+	ON DT.DocumentTypeId = D.DocumentTypeId
+	WHERE DT.Code = @DocumentType
 
 	DECLARE @Code nvarchar(10) = CONCAT(@DocumentType,'-',@Number,'-',YEAR(GETDATE()))
 
@@ -1486,6 +1502,9 @@ GO
 exec [Localization_Save] 0, 'menu_202', 'Pricelists', 1, 1
 exec [Localization_Save] 0, 'menu_202', N'Cenovnici', 2, 1
 
+exec [Localization_Save] 0, 'menu_300', 'Customers', 1, 1
+exec [Localization_Save] 0, 'menu_300', N'Kupci', 2, 1
+
 --Inserts
 INSERT INTO [User] (UserName, [Password], Email, Active, sysDTCreated)
 			VALUES ('acadj97', PWDENCRYPT('321'), 'acadj97@gmail.com', 1, GETDATE())
@@ -1573,7 +1592,7 @@ INSERT INTO ProductType (ParentId, [Name], [Active], sysDTCreated, sysUserAddId)
 
 
 INSERT INTO Menu (ParentId, Code, [Name], [Url], [Image], Sort, Active, sysDTCreated, sysUserAddId)
-				 VALUES(NULL, 'menu_200', 'Documents', '#', 'list_alt', 1, 1, GETDATE(), 1)
+				 VALUES(NULL, 'menu_200', 'Documents', '#', 'list_alt', 2, 1, GETDATE(), 1)
 
 INSERT INTO Menu (ParentId, Code, [Name], [Url], [Image], Sort, Active, sysDTCreated, sysUserAddId)
 				 VALUES((SELECT MenuId FROM Menu where Code = 'menu_200'), 'menu_201', 'Bill', '/documents/bill', 'receipt', 1, 1, GETDATE(), 1)
@@ -1587,3 +1606,10 @@ insert into MenuRole (MenuId, RoleId, Active, sysDTCreated, sysUserAddId)
 					VALUES((SELECT MenuId FROM Menu where Code = 'menu_201'), (SELECT RoleId FROM [Role] WHERE Code = '1'), 1, GETDATE(), 1) 
 insert into MenuRole (MenuId, RoleId, Active, sysDTCreated, sysUserAddId)
 					VALUES((SELECT MenuId FROM Menu where Code = 'menu_202'), (SELECT RoleId FROM [Role] WHERE Code = '1'), 1, GETDATE(), 1) 
+
+INSERT INTO Menu (ParentId, Code, [Name], [Url], [Image], Sort, Active, sysDTCreated, sysUserAddId)
+				 VALUES(NULL, 'menu_300', 'Customers', '/customers', 'supervised_user_circle', 3, 1, GETDATE(), 1)
+
+INSERT INTO MenuRole (MenuId, RoleId, Active, sysDTCreated, sysUserAddId)
+				 VALUES((SELECT MenuId FROM Menu where Code = 'menu_300'), (SELECT RoleId FROM [Role] WHERE Code = '1'), 1, GETDATE(), 1) 
+

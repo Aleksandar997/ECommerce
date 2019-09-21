@@ -16,7 +16,7 @@ namespace ECommerceAPI.Models
         [Required(ErrorMessage = "date_required")]
         public DateTime Date { get; set; }
         public decimal Sum { get; set; }
-        [ChildValidation(new string[] { "CustomerId;customer_required" })]
+        [ChildValidation(new string[] { "CustomerId;customer_required;DocumentType.Code=bill" })]
         public Customer Customer { get; set; }
         public List<DocumentDetail> DocumentDetails { get; set; }
         public int CustomerId { get; set; }

@@ -2,6 +2,7 @@ import { Product } from './product';
 import { Vat } from './vat';
 
 export class DocumentDetail {
+    documentType: string;
     documentDetailId: number;
     product: Product;
     quantity: number;
@@ -19,6 +20,7 @@ export class DocumentDetail {
         this.discount = null;
         this.priceWithDiscount = null;
         this.sum = null;
+        this.documentType = null;
     }
     assignObject(init?: Partial<DocumentDetail>) {
         Object.assign(this, init);

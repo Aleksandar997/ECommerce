@@ -6,10 +6,10 @@ namespace ECommerceAPI.Builders.Interfaces
 {
     public interface IProductsBuilder
     {
-        ProductsBuilder BuildProductType(List<ProductType> productType);
-        ProductsBuilder BuildImages(List<Image> Images);
-        ProductsBuilder BuildInformations(List<Information> Informations);
-        ProductsBuilder BuildBaseInformation(List<Product> products);
+        IProductsBuilder BuildProductType(List<ProductType> productType);
+        IProductsBuilder BuildImages(List<Image> Images);
+        IProductsBuilder BuildInformations(List<Information> Informations);
+        IProductsBuilder BuildBaseInformation(List<Product> products);
         IEnumerable<Product> Build();
     }
 }

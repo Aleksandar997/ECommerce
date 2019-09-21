@@ -34,6 +34,10 @@ const routes: Routes = [
         loadChildren: './documents/documents.module#DocumentsModule',
         // data: { shouldReuse: true }
       },
+      {
+        path: 'customers',
+        loadChildren: './customers/customers.module#CustomersModule'
+      },
     ]
   }
 ];

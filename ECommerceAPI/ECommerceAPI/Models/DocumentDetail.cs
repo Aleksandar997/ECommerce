@@ -5,12 +5,14 @@ namespace ECommerceAPI.Models
 {
     public class DocumentDetail
     {
+        public string DocumentType { get; set; }
         public int? DocumentDetailId { get; set; }
         public int? DocumentId { get; set; }
         public int? ProductId { get; set; }
-        [Required(ErrorMessage = "quantity_required")]
+        [ConditionalRequired("DocumentType=bill", "quantity_required")]
         public int? Quantity { get; set; }
-        [ChildValidation(new string[] { "Code;vat_required" })]
+        //[ChildValidation(new string[] { "Code;vat_required" })]
+        [ChildValidation(new string[] { "Code;vat_required;DocumentType=bill" })]
         public Vat Vat { get; set; }
         [Required(ErrorMessage = "price_required")]
         public decimal? Price { get; set; }

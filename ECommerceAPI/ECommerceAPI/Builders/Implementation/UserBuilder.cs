@@ -9,31 +9,33 @@ namespace ECommerceAPI.Builders.Implementation
     public class UserBuilder : IUserBuilder
     {
         protected User _user = new User();
-        public UserBuilder BuildMenus(List<Menu> menus)
+        public IUserBuilder BuildMenus(List<Menu> menus)
         {
             menus = menus.IfNull();
             _user.Menu = TreeviewHelper.BuildTreeview(null, menus, "MenuId");
             return this;
         }
 
-        public UserBuilder BuildPermissions(List<Permission> permissions)
+        public IUserBuilder BuildPermissions(List<Permission> permissions)
         {
             permissions = permissions.IfNull();
             _user.Permission.AddRange(permissions);
             return this;
         }
 
-        public UserBuilder BuildRoles(List<Role> roles)
+        public IUserBuilder BuildRoles(List<Role> roles)
         {
             roles = roles.IfNull();
             _user.Role.AddRange(roles);
             return this;
         }
-        public UserBuilder BuildInformation(User user)
+        public IUserBuilder BuildInformation(User user)
         {
             user = user.IfNull();
             _user.UserId = user.UserId;
             _user.Active = user.Active;
+            _user.UserName = user.UserName;
+            _user.Email = user.Email;
             return this;
         }
         public User Build()
